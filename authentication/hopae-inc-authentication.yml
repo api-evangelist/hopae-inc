@@ -1,0 +1,33 @@
+generated: '2026-07-19'
+method: searched
+source: openapi/hopae-inc-hconnect-openapi-original.json
+docs: https://docs.hopae.com/api-reference/authentication
+note: >-
+  hConnect exposes two auth surfaces. Workspace API (managing Apps/Workflows/Providers/
+  Activation/Production Tests) uses HTTP Bearer with a workspace key
+  (sk_workspace_test_... / sk_workspace_prod_...). App API (/verifications, /userinfo)
+  uses HTTP Basic with the App's clientId:clientSecret (returned once from POST /v1/apps).
+  A separate OIDC OP surface (connect.hopae.com) handles browser sign-in — see
+  scopes/hopae-inc-scopes.yml. Console endpoints also accept a Clerk-issued JWT bearer.
+summary:
+  types:
+  - http
+  - openIdConnect
+schemes:
+- name: basicAuth
+  type: http
+  scheme: basic
+  description: 'Basic authentication using clientId and clientSecret. For direct API calls,
+    format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`.
+    In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel
+    and the header is generated automatically.'
+  sources:
+  - openapi/hopae-inc-hconnect-openapi-original.json
+- name: workspaceApiKey
+  type: http
+  scheme: bearer
+  bearerFormat: API Key
+  description: 'Workspace API key authentication. Pass your workspace API key as `Authorization:
+    Bearer [example key]`.'
+  sources:
+  - openapi/hopae-inc-hconnect-openapi-original.json
