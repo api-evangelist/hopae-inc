@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Token API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Token
+  description: OAuth 2.0 token exchange
+paths:
+  /token:
+    post:
+      summary: Exchange Code for Token
+      description: Exchanges an authorization code for an ID token, following the OAuth 2.0 standard.
+      operationId: exchangeCodeForToken
+      tags:
+      - Token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Token exchange successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_token:
+                    type: string
+                    description: A JWT containing the user's verified claims.
+        '400':
+          description: Bad Request - Invalid grant_type or missing parameters.
+        '401':
+          description: Unauthorized - Invalid code or client credentials.
+components:
+  schemas:
+    TokenRequest:
+      type: object
+      properties:
+        grant_type:
+          type: string
+          enum:
+          - authorization_code
+          description: Must be 'authorization_code'.
+        code:
+          type: string
+          description: The authorization code received after a successful verification.
+        client_id:
+          type: string
+          description: Your application's Client ID.
+        client_secret:
+          type: string
+          description: Your application's Client Secret. Required for confidential clients.
+      required:
+      - grant_type
+      - code
+      - client_id
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

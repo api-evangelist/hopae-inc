@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Workspace API - Workspace API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Workspace API - Workspace
+  description: Workspace information
+paths:
+  /v1/workspace:
+    get:
+      operationId: WorkspaceController_getWorkspace
+      summary: Get workspace information
+      description: Retrieve workspace details including app count
+      parameters: []
+      responses:
+        '200':
+          description: Workspace information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceResponseDto'
+        '401':
+          description: Invalid API key
+      tags:
+      - Workspace API - Workspace
+      security:
+      - workspace-api-key: []
+components:
+  schemas:
+    WorkspaceResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: org_3C4Ysr9QkNkdbAZR5AD0uoLpgWl
+        apps_count:
+          type: number
+          example: 12
+        createdAt:
+          type: string
+          example: '2025-11-13T09:00:00.000Z'
+          description: ISO-8601 workspace creation timestamp
+        created_at:
+          type: number
+          example: 1731465600
+          description: Unix timestamp of workspace creation (seconds since epoch)
+      required:
+      - id
+      - apps_count
+      - createdAt
+      - created_at
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

@@ -1,0 +1,281 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Workspace API - Production Tests API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Workspace API - Production Tests
+  description: Production test challenges
+paths:
+  /v1/apps/{id}/production-tests:
+    get:
+      operationId: WorkspaceProductionTestController_listChallenges
+      summary: List production test challenges
+      description: Returns all production test challenges for the app.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Challenges retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnifiedChallengeItemDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Production Tests
+      security:
+      - workspace-api-key: []
+    post:
+      operationId: WorkspaceProductionTestController_createChallenge
+      summary: Create a production test challenge
+      description: Creates a new production test challenge for the app. The app name is automatically used as the host name.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductionTestDto'
+      responses:
+        '201':
+          description: Challenge created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeRequestResponseDto'
+          headers:
+            Location:
+              description: URL of the newly created production-test challenge.
+              schema:
+                type: string
+                format: uri-reference
+        '400':
+          description: Invalid input data
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Production Tests
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/production-tests/{challengeId}/report:
+    get:
+      operationId: WorkspaceProductionTestController_getChallengeReport
+      summary: Get challenge report
+      description: Returns challenge info with per-provider completion count and average completion time.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      - name: challengeId
+        required: true
+        in: path
+        description: Challenge ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Challenge report retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeReportResponseDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App or challenge not found
+      tags:
+      - Workspace API - Production Tests
+      security:
+      - workspace-api-key: []
+components:
+  schemas:
+    ChallengeV2ResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        expiresAt:
+          type: string
+        createdAt:
+          type: string
+        completedAt:
+          type: string
+        isActive:
+          type: boolean
+        challengeMode:
+          type: string
+        sponsor:
+          type: object
+        sources:
+          type: array
+          items:
+            type: string
+      required:
+      - id
+      - title
+      - expiresAt
+      - createdAt
+      - isActive
+      - challengeMode
+    ChallengeReportStatsDto:
+      type: object
+      properties:
+        totalParticipations:
+          type: number
+        totalClaims:
+          type: number
+        providerBreakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProviderBreakdownDto'
+      required:
+      - totalParticipations
+      - totalClaims
+      - providerBreakdown
+    ProviderBreakdownDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+        providerName:
+          type: string
+        claimCount:
+          type: number
+      required:
+      - providerId
+      - providerName
+      - claimCount
+    ChallengeRequestResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        status:
+          type: string
+        payload:
+          type: object
+        challengeId:
+          type: string
+        createdAt:
+          type: string
+      required:
+      - id
+      - clientId
+      - status
+      - payload
+      - createdAt
+    CreateProductionTestDto:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Challenge title
+          example: BankID SE Production Test
+        description:
+          type: string
+          description: Challenge description
+        providerIds:
+          description: Provider IDs to test
+          example:
+          - bankidse
+          - smartid
+          type: array
+          items:
+            type: string
+        targetPlatform:
+          type: string
+          description: Target platform filter
+          enum:
+          - ios
+          - android
+        maxStamps:
+          type: number
+          description: Maximum number of stamps (first-come limit)
+          example: 3
+          minimum: 1
+        allowDuplicateParticipation:
+          type: boolean
+          description: Whether to allow duplicate participation (same user + same provider)
+      required:
+      - title
+    UnifiedChallengeItemDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - challenge
+          - request
+        challenge:
+          $ref: '#/components/schemas/ChallengeV2ResponseDto'
+        request:
+          $ref: '#/components/schemas/ChallengeRequestResponseDto'
+      required:
+      - type
+    ChallengeReportResponseDto:
+      type: object
+      properties:
+        challenge:
+          $ref: '#/components/schemas/ChallengeV2ResponseDto'
+        stats:
+          $ref: '#/components/schemas/ChallengeReportStatsDto'
+      required:
+      - challenge
+      - stats
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

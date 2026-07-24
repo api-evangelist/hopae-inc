@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Providers API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Providers
+  description: eID provider discovery
+paths:
+  /v1/providers:
+    get:
+      summary: Get Providers
+      description: Retrieves a list of available eID providers.
+      operationId: getProviders
+      tags:
+      - Providers
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - activated
+          - deactivated
+          - action_required
+        description: The status of the provider.
+      responses:
+        '200':
+          description: Providers retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The unique identifier for the eID provider
+                    logoUrl:
+                      type: string
+                      description: The URL of the eID provider's logo
+                    name:
+                      type: string
+                      description: The display name of the eID provider
+                    description:
+                      type: string
+                      description: A description of the eID provider
+                    countries:
+                      type: array
+                      items:
+                        type: string
+                      description: The countries supported by the eID provider
+                    status:
+                      type: string
+                      enum:
+                      - activated
+                      - deactivated
+                      - action_required
+                      description: The current status of the provider
+        '400':
+          description: Bad Request - Invalid parameters or eID not enabled.
+        '401':
+          description: Unauthorized - Invalid client credentials.
+  /v1/providers/{providerId}/configuration:
+    get:
+      operationId: ProvidersController_getProviderConfiguration
+      summary: Get provider configuration
+      description: Get provider-specific configuration including required userData fields and their options. For example, iDIN requires a presetBank field with available Dutch bank options.
+      parameters:
+      - name: providerId
+        required: true
+        in: path
+        description: Provider identifier (e.g., idin)
+        example: idin
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Provider configuration with required fields and options
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderConfigurationDto'
+      tags:
+      - Providers
+      security:
+      - basic-auth: []
+components:
+  schemas:
+    UserDataFieldDto:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field name in userData object
+          example: presetBank
+        type:
+          type: string
+          description: Field type
+          enum:
+          - text
+          - select
+          example: select
+        required:
+          type: boolean
+          description: Whether this field is required
+          example: true
+        label:
+          type: string
+          description: Human-readable label
+          example: Bank Selection
+        description:
+          type: string
+          description: Field description/help text
+          example: Select your Dutch bank for iDIN verification
+        options:
+          description: Available options for select-type fields
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataOptionDto'
+        pattern:
+          type: string
+          description: Validation pattern (regex) for text-type fields
+          example: ^[A-Z]{2}[0-9]{9}$
+      required:
+      - field
+      - type
+      - required
+      - label
+    ProviderConfigurationDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: Provider identifier
+          example: idin
+        requiredUserData:
+          description: Required userData fields for this provider
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataFieldDto'
+        optionalUserData:
+          description: Optional userData fields for this provider
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataFieldDto'
+        flowTypes:
+          description: Supported verification flow types
+          example:
+          - redirect
+          type: array
+          items:
+            type: string
+        lastUpdated:
+          type: string
+          description: ISO timestamp when configuration was last updated
+          example: '2024-01-15T10:30:00Z'
+      required:
+      - providerId
+      - requiredUserData
+      - flowTypes
+    UserDataOptionDto:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Option value to be used in userData
+          example: ABNANL2A
+        label:
+          type: string
+          description: Human-readable label for the option
+          example: ABN AMRO
+      required:
+      - value
+      - label
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

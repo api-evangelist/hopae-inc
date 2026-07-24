@@ -1,0 +1,710 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Workspace API - Apps API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Workspace API - Apps
+  description: App management
+paths:
+  /v1/apps:
+    post:
+      operationId: WorkspaceAppsController_createApp
+      summary: Create a new app
+      description: Create a new application in the workspace
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppDto'
+      responses:
+        '201':
+          description: App created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceAppDto'
+          headers:
+            Location:
+              description: URL of the newly created app (e.g., /v1/apps/FK5b0KSM).
+              schema:
+                type: string
+                format: uri-reference
+        '401':
+          description: Invalid API key
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+    get:
+      operationId: WorkspaceAppsController_listApps
+      summary: List all apps
+      description: Get all applications in the workspace with pagination
+      parameters:
+      - name: limit
+        required: true
+        in: query
+        schema:
+          type: number
+      - name: offset
+        required: true
+        in: query
+        schema:
+          type: number
+      responses:
+        '200':
+          description: Apps retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAppsResponseDto'
+        '401':
+          description: Invalid API key
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+  /v1/apps/batch:
+    post:
+      operationId: WorkspaceAppsController_batchCreateApps
+      summary: Batch create apps
+      description: Create multiple applications at once in the workspace
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchCreateAppsDto'
+      responses:
+        '201':
+          description: Apps created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceBatchCreateAppsResponseDto'
+        '401':
+          description: Invalid API key
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/redirect-uris:
+    get:
+      operationId: WorkspaceAppsController_getRedirectUris
+      summary: Get redirect URIs
+      description: Get the redirect URIs for an application
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Redirect URIs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateRedirectUrisDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+    put:
+      operationId: WorkspaceAppsController_updateRedirectUris
+      summary: Update redirect URIs
+      description: Update the redirect URIs for an application
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRedirectUrisDto'
+      responses:
+        '200':
+          description: Redirect URIs updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceAppDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/webhook-config:
+    get:
+      operationId: WorkspaceAppsController_getWebhookConfig
+      summary: Get webhook configuration
+      description: Get the webhook configuration for an application
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Webhook configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateWebhookConfigDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+    patch:
+      operationId: WorkspaceAppsController_updateWebhookConfig
+      summary: Update webhook configuration
+      description: Update webhook configuration for an application
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWebhookConfigDto'
+      responses:
+        '200':
+          description: Webhook configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceAppDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/webhook-config/rotate-secret:
+    post:
+      operationId: WorkspaceAppsController_rotateWebhookSecret
+      summary: Rotate webhook secret
+      description: Generate a new webhook secret for an application
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Webhook secret rotated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  secret:
+                    type: string
+                    example: whsec_...
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/providers:
+    get:
+      operationId: WorkspaceAppsController_listProviders
+      summary: List activation summaries for all providers on an app
+      description: Returns a lightweight per-provider activation state summary for every provider that has been enabled on the app. Useful for rendering a multi-provider dashboard without N round-trips. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAppProvidersResponseDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}:
+    get:
+      operationId: WorkspaceAppsController_getApp
+      summary: Get app details
+      description: Retrieve details of a specific application
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: App details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceAppDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+    patch:
+      operationId: WorkspaceAppsController_patchApp
+      summary: Patch app
+      description: Partially update an existing application configuration (name, redirect URIs, webhook, default redirects)
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAppDto'
+      responses:
+        '200':
+          description: App updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceAppDto'
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+    delete:
+      operationId: WorkspaceAppsController_deleteApp
+      summary: Delete app
+      description: Delete an application from the workspace
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: App deleted successfully
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Apps
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/rotate-client-secret:
+    post:
+      description: Generates a new clientSecret for the App. The old secret is immediately invalidated. The new secret is returned exactly once.
+      operationId: WorkspaceAppsController_rotateClientSecret
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RotateClientSecretResponseDto'
+          description: New clientSecret generated
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      security:
+      - workspace-api-key: []
+      summary: Rotate client secret
+      tags:
+      - Workspace API - Apps
+components:
+  schemas:
+    PaginatedAppsResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        total:
+          type: number
+        limit:
+          type: number
+        offset:
+          type: number
+      required:
+      - data
+      - total
+      - limit
+      - offset
+    WorkflowEntryDto:
+      type: object
+      properties:
+        workflowId:
+          type: string
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+      - workflowId
+      - name
+      - entryNodeId
+      - nodes
+    FlowNodeDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: nd_ab12cd34
+        type:
+          type: string
+          enum:
+          - request
+          - response
+          - verification
+          - check-min-loa
+          - check-claim
+          - evaluate
+          - if
+        next:
+          type: object
+          description: 'Next: string (single output) or NextRoute[] (IF branching)'
+        config:
+          type: object
+          description: Type-specific configuration (max depth 5, max 50 keys per level)
+      required:
+      - id
+      - type
+    WebhookConfigDto:
+      type: object
+      properties:
+        url:
+          type: string
+        enabled:
+          type: boolean
+          default: true
+        retryAttempts:
+          type: number
+          default: 3
+        timeoutSeconds:
+          type: number
+          default: 10
+        secret:
+          type: string
+          description: Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret.
+        events:
+          default: []
+          type: array
+          items:
+            type: string
+      required:
+      - enabled
+      - retryAttempts
+      - timeoutSeconds
+      - events
+    ListAppProvidersResponseDto:
+      type: object
+      properties:
+        providers:
+          description: Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
+          type: array
+          items:
+            $ref: '#/components/schemas/AppProviderSummaryDto'
+        total:
+          type: number
+          example: 3
+          description: Total number of providers in this response
+      required:
+      - providers
+      - total
+    CreateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    WorkspaceAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          description: App-level brand logo (base64 data URL)
+        redirectUris:
+          type: array
+          items:
+            type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        providers:
+          type: object
+          description: Contract-level provider configurations. Key = provider ID.
+          example:
+            bankidse:
+              enabled: true
+              config: {}
+            frejaid:
+              enabled: false
+              config: {}
+        defaultWorkflowId:
+          type: string
+          example: default
+          description: ID of the default workflow used when workflow_id is not specified
+        workflows:
+          description: Workflow profiles for the app
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowEntryDto'
+        organizationId:
+          type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        defaultSuccessRedirectUri:
+          type: string
+        defaultFailureRedirectUri:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+      - name
+      - redirectUris
+      - clientId
+      - clientSecret
+      - providers
+      - defaultWorkflowId
+      - workflows
+      - organizationId
+      - createdAt
+      - updatedAt
+    BatchCreateAppsDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchCreateAppItemDto'
+        continueOnError:
+          type: boolean
+          default: false
+      required:
+      - items
+    WorkspaceBatchCreateAppsResponseDto:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+        successCount:
+          type: number
+        errorCount:
+          type: number
+      required:
+      - results
+      - successCount
+      - errorCount
+    RotateClientSecretResponseDto:
+      type: object
+      properties:
+        clientSecret:
+          type: string
+          description: The newly generated clientSecret. Persist immediately; cannot be retrieved later.
+          example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
+      required:
+      - clientSecret
+    AppProviderSummaryDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+          example: mitid
+          description: Provider identifier
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the provider is enabled on this app
+        state:
+          type: string
+          enum:
+          - not_started
+          - in_progress
+          - completed
+          example: completed
+          description: Overall activation state derived from step completion
+        currentStep:
+          type: string
+          example: activated
+          description: The type key of the current activation step
+        currentStepIndex:
+          type: number
+          example: 3
+          description: Zero-based index of the current step in the step sequence
+        stepCount:
+          type: number
+          example: 4
+          description: Total number of steps in this provider's activation sequence
+      required:
+      - providerId
+      - enabled
+      - state
+      - currentStep
+      - currentStepIndex
+      - stepCount
+    UpdateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          description: App-level brand logo (base64 data URL). Pass an empty string to remove the logo.
+        redirectUris:
+          type: array
+          items:
+            type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        defaultSuccessRedirectUri:
+          type: string
+        defaultFailureRedirectUri:
+          type: string
+    BatchCreateAppItemDto:
+      type: object
+      properties:
+        name:
+          type: string
+        redirectUris:
+          type: array
+          items:
+            type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        idempotencyKey:
+          type: string
+      required:
+      - name
+    UpdateWebhookConfigDto:
+      type: object
+      properties:
+        url:
+          type: string
+        enabled:
+          type: boolean
+        retryAttempts:
+          type: number
+        timeoutSeconds:
+          type: number
+        events:
+          type: array
+          items:
+            type: string
+    UpdateRedirectUrisDto:
+      type: object
+      properties:
+        redirectUris:
+          type: array
+          items:
+            type: string
+      required:
+      - redirectUris
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

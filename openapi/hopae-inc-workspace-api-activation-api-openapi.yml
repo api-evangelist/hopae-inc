@@ -1,0 +1,224 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Workspace API - Activation API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Workspace API - Activation
+  description: Provider activation per app
+paths:
+  /v1/apps/{id}/providers/{providerId}/activation/steps:
+    get:
+      operationId: WorkspaceActivationController_getActivationSteps
+      summary: Get activation steps
+      description: Get computed activation steps for a specific provider
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      - name: providerId
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Activation steps retrieved successfully
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Activation
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/providers/{providerId}/activation:
+    patch:
+      operationId: WorkspaceActivationController_enableProvider
+      summary: Enable or disable provider
+      description: Enable or disable a provider
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      - name: providerId
+        required: true
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceEnableProviderBodyDto'
+      responses:
+        '200':
+          description: Provider updated successfully
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Activation
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/providers/{providerId}/activation/form:
+    post:
+      operationId: WorkspaceActivationController_submitActivationForm
+      summary: Submit activation form
+      description: Submit the activation request form for provider activation
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      - name: providerId
+        required: true
+        in: path
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceSubmitActivationFormDto'
+      responses:
+        '201':
+          description: Activation form submitted successfully
+          headers:
+            Location:
+              description: URL of the submitted activation form.
+              schema:
+                type: string
+                format: uri-reference
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Activation
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/providers/{providerId}/activation/documents:
+    post:
+      operationId: WorkspaceActivationController_uploadDocuments
+      summary: Upload activation documents
+      description: Upload documents required for provider activation
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      - name: providerId
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Document uploaded successfully
+        '401':
+          description: Invalid API key
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Activation
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/providers/{providerId}/activation/documents/{documentId}:
+    delete:
+      operationId: WorkspaceActivationController_deleteDocument
+      summary: Delete an activation document
+      description: Remove an uploaded activation document. Deletion is blocked once the document has been processed (approved) by review.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      - name: providerId
+        required: true
+        in: path
+        schema:
+          type: string
+      - name: documentId
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Document deleted successfully
+        '401':
+          description: Invalid API key
+        '404':
+          description: App or document not found
+        '409':
+          description: Document has already been processed and cannot be deleted
+      tags:
+      - Workspace API - Activation
+      security:
+      - workspace-api-key: []
+components:
+  schemas:
+    WorkspaceSubmitActivationFormDto:
+      type: object
+      properties:
+        data:
+          type: object
+          description: Form data as key-value pairs
+          example:
+            legalCompanyName: Acme Corp
+            registrationNumber: '12345678'
+        saveToCompanyInfo:
+          type: boolean
+          description: If true, also persist matching fields to app companyInfo
+          default: false
+      required:
+      - data
+    WorkspaceEnableProviderBodyDto:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Whether to enable or disable the provider
+          example: true
+      required:
+      - enabled
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

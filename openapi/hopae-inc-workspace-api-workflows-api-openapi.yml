@@ -1,0 +1,332 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Workspace API - Workflows API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Workspace API - Workflows
+  description: Workflow configuration per app
+paths:
+  /v1/apps/{id}/workflows/node-types:
+    get:
+      operationId: WorkspaceWorkflowController_getNodeTypes
+      summary: List available node types
+      description: Returns all available flow node types with their fields and placement constraints.
+      parameters: []
+      responses:
+        '200':
+          description: Node type catalog
+      tags:
+      - Workspace API - Workflows
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/workflows:
+    post:
+      operationId: WorkspaceWorkflowController_createWorkflow
+      summary: Create a workflow
+      description: Create a new workflow for the app. Provider keys in `providers` must exist in `app.providers`. Maximum 100 workflows per app. If `workflowId` is omitted, it is auto-generated from `name`.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkflowDto'
+      responses:
+        '201':
+          description: Workflow created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowResponseDto'
+          headers:
+            Location:
+              description: URL of the newly created workflow.
+              schema:
+                type: string
+                format: uri-reference
+        '400':
+          description: Validation error (invalid provider key, max limit reached)
+        '404':
+          description: App not found
+        '409':
+          description: Workflow ID already exists
+      tags:
+      - Workspace API - Workflows
+      security:
+      - workspace-api-key: []
+    get:
+      operationId: WorkspaceWorkflowController_listWorkflows
+      summary: List all workflows
+      description: Returns all workflows for the app, including the default workflow.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Workflow list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkflowResponseDto'
+        '404':
+          description: App not found
+      tags:
+      - Workspace API - Workflows
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/workflows/{workflowId}:
+    get:
+      operationId: WorkspaceWorkflowController_getWorkflow
+      summary: Get a workflow
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      - name: workflowId
+        required: true
+        in: path
+        description: Workflow identifier
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Workflow details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowResponseDto'
+        '404':
+          description: App or workflow not found
+      tags:
+      - Workspace API - Workflows
+      security:
+      - workspace-api-key: []
+    patch:
+      operationId: WorkspaceWorkflowController_updateWorkflow
+      summary: Update a workflow
+      description: Partially update a workflow. Only provided fields are changed. Provider keys in `providers` must exist in `app.providers`.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      - name: workflowId
+        required: true
+        in: path
+        description: Workflow identifier
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkflowDto'
+      responses:
+        '200':
+          description: Workflow updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowResponseDto'
+        '400':
+          description: Validation error (invalid provider key)
+        '404':
+          description: App or workflow not found
+      tags:
+      - Workspace API - Workflows
+      security:
+      - workspace-api-key: []
+    delete:
+      operationId: WorkspaceWorkflowController_deleteWorkflow
+      summary: Delete a workflow
+      description: Delete a workflow. Cannot delete the default workflow — change default first via set-default.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      - name: workflowId
+        required: true
+        in: path
+        description: Workflow identifier
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Workflow deleted
+          content:
+            application/json:
+              schema:
+                properties:
+                  deleted:
+                    type: boolean
+        '400':
+          description: Cannot delete default workflow
+        '404':
+          description: App or workflow not found
+      tags:
+      - Workspace API - Workflows
+      security:
+      - workspace-api-key: []
+  /v1/apps/{id}/workflows/{workflowId}/set-default:
+    post:
+      operationId: WorkspaceWorkflowController_setDefault
+      summary: Set a workflow as default
+      description: Set this workflow as the app default. The default workflow is used when no workflow_id is specified in OIDC authorize.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        description: App client ID
+        schema:
+          type: string
+      - name: workflowId
+        required: true
+        in: path
+        description: Workflow identifier to set as default
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Default updated
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+        '404':
+          description: App or workflow not found
+      tags:
+      - Workspace API - Workflows
+      security:
+      - workspace-api-key: []
+components:
+  schemas:
+    CreateWorkflowDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: KYC Premium
+        entryNodeId:
+          type: string
+          example: nd_ab12cd34
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
+      required:
+      - name
+      - entryNodeId
+      - nodes
+    FlowNodeDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: nd_ab12cd34
+        type:
+          type: string
+          enum:
+          - request
+          - response
+          - verification
+          - check-min-loa
+          - check-claim
+          - evaluate
+          - if
+        next:
+          type: object
+          description: 'Next: string (single output) or NextRoute[] (IF branching)'
+        config:
+          type: object
+          description: Type-specific configuration (max depth 5, max 50 keys per level)
+      required:
+      - id
+      - type
+    WorkflowResponseDto:
+      type: object
+      properties:
+        workflowId:
+          type: string
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+      - workflowId
+      - name
+      - entryNodeId
+      - nodes
+    UpdateWorkflowDto:
+      type: object
+      properties:
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

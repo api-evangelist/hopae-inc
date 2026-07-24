@@ -1,0 +1,183 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Console - API Keys
+  description: Workspace API key management (Console)
+paths:
+  /v1/console/api-keys:
+    post:
+      operationId: ConsoleController_createApiKey
+      summary: Create workspace API key
+      description: Create a new API key for accessing workspace management APIs. The secret is only shown once.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyDto'
+      responses:
+        '201':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyResponseDto'
+        '401':
+          description: Unauthorized
+      tags:
+      - Console - API Keys
+      security:
+      - JWT-auth: []
+    get:
+      operationId: ConsoleController_listApiKeys
+      summary: List workspace API keys
+      description: List all API keys for the workspace. Secrets are never returned.
+      parameters: []
+      responses:
+        '200':
+          description: List of API keys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiKeyResponseDto'
+        '401':
+          description: Unauthorized
+      tags:
+      - Console - API Keys
+      security:
+      - JWT-auth: []
+  /v1/console/api-keys/{id}/revoke:
+    post:
+      operationId: ConsoleController_revokeApiKey
+      summary: Revoke API key
+      description: Revoke an API key. Revoked keys can no longer be used to call workspace APIs.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: API key revoked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevokeApiKeyResponseDto'
+        '401':
+          description: Unauthorized
+        '404':
+          description: API key not found
+      tags:
+      - Console - API Keys
+      security:
+      - JWT-auth: []
+  /v1/console/api-keys/{id}:
+    delete:
+      operationId: ConsoleController_deleteApiKey
+      summary: Delete API key
+      description: Delete an API key. Deleted keys can no longer be used to call workspace APIs.
+      parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: API key deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevokeApiKeyResponseDto'
+        '401':
+          description: Unauthorized
+        '404':
+          description: API key not found
+      tags:
+      - Console - API Keys
+      security:
+      - JWT-auth: []
+components:
+  schemas:
+    RevokeApiKeyResponseDto:
+      type: object
+      properties:
+        revoked:
+          type: boolean
+          example: true
+      required:
+      - revoked
+    CreateApiKeyDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Backend CI
+      required:
+      - name
+    ApiKeyResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        name:
+          type: string
+          example: Backend CI
+        secret:
+          type: string
+          example: sk_workspace_abc123...
+          description: Full API key secret (only returned once at creation time — persist it immediately as it cannot be retrieved later).
+        last_used_at:
+          type: number
+          example: 1731465600
+          description: Unix timestamp
+        revoked_at:
+          type: number
+          example: 1731465600
+          description: Unix timestamp
+        created_at:
+          type: number
+          example: 1731465600
+          description: Unix timestamp
+      required:
+      - id
+      - name
+      - secret
+      - created_at
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic

@@ -1,0 +1,432 @@
+openapi: 3.0.0
+info:
+  title: hConnect Console - API Keys Verifications API
+  description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
+  version: 1.0.0
+  contact:
+    name: hConnect Support
+    url: https://www.hopae.com
+    email: dev@hopae.com
+servers:
+- url: https://sandbox.api.hopae.com/connect
+  description: Sandbox Server
+tags:
+- name: Verifications
+  description: Identity verification sessions
+paths:
+  /v1/verifications:
+    post:
+      summary: Create Verification
+      description: Initiates a new identity verification session with the specified eID provider.
+      operationId: createVerification
+      tags:
+      - Verifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVerificationRequest'
+      responses:
+        '201':
+          description: Verification session created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateVerificationResponse'
+        '400':
+          description: Bad Request - Invalid parameters or eID not enabled.
+        '401':
+          description: Unauthorized - Invalid client credentials.
+  /v1/verifications/{verificationId}:
+    get:
+      summary: Get Verification Status
+      description: Retrieves the current status and result of a verification session.
+      operationId: getVerification
+      tags:
+      - Verifications
+      parameters:
+      - name: verificationId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique identifier for the verification session.
+      responses:
+        '200':
+          description: Verification status retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVerificationResponse'
+        '404':
+          description: Verification not found.
+    delete:
+      summary: Cancel Verification
+      description: Cancels and deletes an ongoing verification session.
+      operationId: deleteVerification
+      tags:
+      - Verifications
+      parameters:
+      - name: verificationId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The unique identifier for the verification session.
+      responses:
+        '204':
+          description: Verification cancelled successfully.
+        '400':
+          description: Bad Request - Verification is already in a terminal state.
+        '404':
+          description: Verification not found.
+  /v1/verifications/{verificationId}/evidence:
+    get:
+      operationId: VerificationController_getVerificationEvidence
+      summary: Get evidence for a verification
+      description: Returns the presentation-ready evidence object captured during verification (object format). If evidence is not available or verification is incomplete, appropriate errors are returned.
+      parameters:
+      - name: verificationId
+        required: true
+        in: path
+        description: Unique verification identifier
+        example: 1234567890abcdef
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Evidence retrieved successfully
+        '400':
+          description: Verification is not completed or has no evidence
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: evidence_not_available
+                    message: Evidence is not available for this verification
+                    details:
+                      status: initiated
+                      verificationId: 123...
+      tags:
+      - Verifications
+      security:
+      - basic-auth: []
+  /v1/verifications/{verificationId}/userinfo:
+    get:
+      operationId: VerificationController_getVerificationUserinfo
+      summary: Get userinfo for a verification
+      description: Returns user information aligned with OIDC /userinfo output. Contains authentication context, user claims, provenance, and missing_claims.
+      parameters:
+      - name: verificationId
+        required: true
+        in: path
+        description: Unique verification identifier
+        example: 1234567890abcdef
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Userinfo retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVerificationUserInfoResponseDto'
+        '400':
+          description: Verification is not completed
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: verification_not_completed
+                    message: Verification must be completed to fetch userinfo
+                    details:
+                      status: failed
+                      verificationId: 123...
+      tags:
+      - Verifications
+      security:
+      - basic-auth: []
+  /v1/verifications/dc-request:
+    post:
+      operationId: VerificationController_createDcRequest
+      summary: Create DC request for Digital Credentials flow
+      description: Creates the EID session for a DC flowType verification. This is a deferred session creation - the HopaeConnect session was created during createVerification, and this endpoint creates the EID session (verifier request) when the client is ready to display the QR code.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DcRequestDto'
+      responses:
+        '200':
+          description: DC request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DcRequestResponseDto'
+        '400':
+          description: Invalid flow type or verification status
+        '404':
+          description: Verification not found
+      tags:
+      - Verifications
+      security:
+      - basic-auth: []
+components:
+  schemas:
+    GetVerificationUserInfoResponseDto:
+      type: object
+      properties:
+        sub:
+          type: string
+          description: Pairwise subject (accountId)
+        acr:
+          type: string
+          description: Authentication Context Class Reference
+        hopae_loa:
+          type: number
+          description: Hopae Level of Assurance
+        amr:
+          type: object
+          description: Authentication Methods Reference
+        missing_claims:
+          description: Missing claim names
+          type: array
+          items:
+            type: string
+        user:
+          description: 'User profile claims. `null` for pure match flows (`verification_model: "match"`).'
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/VerificationUserBlockDto'
+        provenance:
+          description: Source provenance
+          allOf:
+          - $ref: '#/components/schemas/VerificationProvenanceDto'
+        provider_id:
+          type: string
+          description: Provider identifier that authenticated the subject. Mirrors the single element in `amr` for forward compatibility.
+        verification_model:
+          type: string
+          enum:
+          - disclosure
+          - match
+          description: 'Always present. Indicates which top-level payload to interpret: `disclosure` (user attributes under `user`) or `match` (comparison envelope under `match`, with `user: null`). Legacy verifications without a stored model default to `disclosure`.'
+        match:
+          description: Match envelope. Present only when `verification_model` is `match`.
+          allOf:
+          - $ref: '#/components/schemas/MatchEnvelopeDto'
+    GetVerificationResponse:
+      type: object
+      properties:
+        verificationId:
+          type: string
+        status:
+          type: string
+        providerId:
+          type: string
+        authorizationCode:
+          type: string
+          description: Appears when status is 'completed'.
+        verifiedAttributes:
+          type: object
+          description: Contains user's verified data upon completion.
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+        expiresAt:
+          type: string
+          format: date-time
+        verifiedAt:
+          type: string
+          format: date-time
+    CreateVerificationResponse:
+      type: object
+      properties:
+        verificationId:
+          type: string
+        status:
+          type: string
+          enum:
+          - initiated
+          - pending
+        providerId:
+          type: string
+        flowType:
+          type: string
+          enum:
+          - qr
+          - redirect
+          - push
+        flowDetails:
+          type: object
+          properties:
+            qrData:
+              type: string
+              description: Base64 data for QR code generation.
+            authorizationUrl:
+              type: string
+              format: uri
+              description: URL for browser redirection.
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    VerificationUserBlockDto:
+      type: object
+      properties: {}
+    DcRequestResponseDto:
+      type: object
+      properties:
+        requestBase64:
+          type: string
+          description: Base64 encoded request data
+        dcSessionId:
+          type: string
+          description: DC session ID from EID service
+      required:
+      - requestBase64
+      - dcSessionId
+    MatchEnvelopeDto:
+      type: object
+      description: Result envelope for match-capable providers. Present only when `verification_model` is `match`.
+      properties:
+        matched:
+          type: boolean
+          description: Aggregate match outcome across all submitted fields.
+        granularity:
+          type: string
+          enum:
+          - aggregate
+          - per_field
+          description: Determines whether `details` is included. `per_field` exposes per-field outcomes; `aggregate` exposes only the overall `matched` flag.
+        submitted_fields:
+          type: array
+          items:
+            type: string
+          description: Field keys the RP supplied in `matchData`. Provider-native names — not normalised.
+        details:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MatchFieldDetailDto'
+          description: Per-field outcomes, keyed by field name. Present only when `granularity` is `per_field`. May include verifier keys beyond `submitted_fields` (e.g., `face_photo_disparity` from mObywatel) when the upstream provider emits them.
+      required:
+      - matched
+      - granularity
+      - submitted_fields
+    VerificationProvenanceDto:
+      type: object
+      properties:
+        presentation:
+          type: object
+          description: Presentation context
+        _metadata:
+          type: object
+          description: Metadata
+    MatchFieldDetailDto:
+      type: object
+      properties:
+        matched:
+          type: boolean
+          description: Whether this field's submitted value matched the authoritative source.
+        submitted_value:
+          type: string
+          description: Echo of the value the RP submitted via `matchData`. Present in `/userinfo` responses for matchData fields only; never present on passthrough verifier keys (e.g., `face_photo_disparity`). Omitted from id_token claims.
+        similarity:
+          type: number
+          description: Similarity score (0–100). Present only when the upstream verifier returned a similarity score.
+      required:
+      - matched
+    DcRequestDto:
+      type: object
+      properties:
+        verificationId:
+          type: string
+          description: Verification ID
+        userData:
+          description: User data for DC request (docType, protocol, etc.)
+          allOf:
+          - $ref: '#/components/schemas/AuthenticationHint'
+      required:
+      - verificationId
+    CreateVerificationRequest:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: The identifier for the desired eID provider.
+          example: bankidse
+        redirectUri:
+          type: string
+          format: uri
+          description: URL to redirect to after a redirect-based verification.
+        webhookUrl:
+          type: string
+          format: uri
+          description: URL to receive asynchronous status updates.
+        userData:
+          type: object
+          description: User information required by certain eID providers.
+          example:
+            email: user@example.com
+      required:
+      - providerId
+    AuthenticationHint:
+      type: object
+      properties:
+        personalNumber:
+          type: string
+          description: Swedish personal number (BankID)
+        cprNumber:
+          type: string
+          description: Danish CPR number (MitID)
+        phoneNumber:
+          type: string
+          description: Phone number (UAE Pass)
+        nric:
+          type: string
+          description: Singapore NRIC (Singpass)
+        emiratesId:
+          type: string
+          description: UAE Emirates ID
+        documentNumber:
+          type: string
+          description: Document number (mDL)
+        mobileNumber:
+          type: string
+          description: Alternative mobile number
+        email:
+          type: string
+          description: Email address
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically.'
+    workspaceApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`.'
+    consoleJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Console JWT authentication. Issued by Clerk after Console login.
+    workspace-api-key:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+    app-basic:
+      type: http
+      scheme: basic
