@@ -1,0 +1,30 @@
+{
+  "provider": "hopae-inc",
+  "sources": [
+    "hopae-inc-console-api-keys-api-openapi.yml",
+    "hopae-inc-providers-api-openapi.yml",
+    "hopae-inc-token-api-openapi.yml",
+    "hopae-inc-verifications-api-openapi.yml",
+    "hopae-inc-workspace-api-activation-api-openapi.yml",
+    "hopae-inc-workspace-api-apps-api-openapi.yml",
+    "hopae-inc-workspace-api-production-tests-api-openapi.yml",
+    "hopae-inc-workspace-api-workflows-api-openapi.yml",
+    "hopae-inc-workspace-api-workspace-api-openapi.yml"
+  ],
+  "outputs": [
+    "hopae-inc-console-api-keys-api-openapi.yml",
+    "hopae-inc-providers-api-openapi.yml",
+    "hopae-inc-token-api-openapi.yml",
+    "hopae-inc-verifications-api-openapi.yml",
+    "hopae-inc-workspace-api-activation-api-openapi.yml",
+    "hopae-inc-workspace-api-apps-api-openapi.yml",
+    "hopae-inc-workspace-api-production-tests-api-openapi.yml",
+    "hopae-inc-workspace-api-workflows-api-openapi.yml",
+    "hopae-inc-workspace-api-workspace-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

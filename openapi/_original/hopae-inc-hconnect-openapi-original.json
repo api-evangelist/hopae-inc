@@ -1,0 +1,5503 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "hConnect API",
+    "description": "The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "hConnect Support",
+      "url": "https://www.hopae.com",
+      "email": "dev@hopae.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://sandbox.api.hopae.com/connect",
+      "description": "Sandbox Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Console - API Keys",
+      "description": "Workspace API key management (Console)"
+    },
+    {
+      "name": "Providers",
+      "description": "eID provider discovery"
+    },
+    {
+      "name": "Token",
+      "description": "OAuth 2.0 token exchange"
+    },
+    {
+      "name": "Verifications",
+      "description": "Identity verification sessions"
+    },
+    {
+      "name": "Workspace API - Activation",
+      "description": "Provider activation per app"
+    },
+    {
+      "name": "Workspace API - Apps",
+      "description": "App management"
+    },
+    {
+      "name": "Workspace API - Production Tests",
+      "description": "Production test challenges"
+    },
+    {
+      "name": "Workspace API - Workflows",
+      "description": "Workflow configuration per app"
+    },
+    {
+      "name": "Workspace API - Workspace",
+      "description": "Workspace information"
+    }
+  ],
+  "paths": {
+    "/v1/providers": {
+      "get": {
+        "summary": "Get Providers",
+        "description": "Retrieves a list of available eID providers.",
+        "operationId": "getProviders",
+        "tags": [
+          "Providers"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "activated",
+                "deactivated",
+                "action_required"
+              ]
+            },
+            "description": "The status of the provider."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Providers retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique identifier for the eID provider"
+                      },
+                      "logoUrl": {
+                        "type": "string",
+                        "description": "The URL of the eID provider's logo"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The display name of the eID provider"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "A description of the eID provider"
+                      },
+                      "countries": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The countries supported by the eID provider"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "activated",
+                          "deactivated",
+                          "action_required"
+                        ],
+                        "description": "The current status of the provider"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid parameters or eID not enabled."
+          },
+          "401": {
+            "description": "Unauthorized - Invalid client credentials."
+          }
+        }
+      }
+    },
+    "/v1/verifications": {
+      "post": {
+        "summary": "Create Verification",
+        "description": "Initiates a new identity verification session with the specified eID provider.",
+        "operationId": "createVerification",
+        "tags": [
+          "Verifications"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVerificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Verification session created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVerificationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid parameters or eID not enabled."
+          },
+          "401": {
+            "description": "Unauthorized - Invalid client credentials."
+          }
+        }
+      }
+    },
+    "/v1/verifications/{verificationId}": {
+      "get": {
+        "summary": "Get Verification Status",
+        "description": "Retrieves the current status and result of a verification session.",
+        "operationId": "getVerification",
+        "tags": [
+          "Verifications"
+        ],
+        "parameters": [
+          {
+            "name": "verificationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier for the verification session."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification status retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetVerificationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Verification not found."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Cancel Verification",
+        "description": "Cancels and deletes an ongoing verification session.",
+        "operationId": "deleteVerification",
+        "tags": [
+          "Verifications"
+        ],
+        "parameters": [
+          {
+            "name": "verificationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique identifier for the verification session."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Verification cancelled successfully."
+          },
+          "400": {
+            "description": "Bad Request - Verification is already in a terminal state."
+          },
+          "404": {
+            "description": "Verification not found."
+          }
+        }
+      }
+    },
+    "/token": {
+      "post": {
+        "summary": "Exchange Code for Token",
+        "description": "Exchanges an authorization code for an ID token, following the OAuth 2.0 standard.",
+        "operationId": "exchangeCodeForToken",
+        "tags": [
+          "Token"
+        ],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token exchange successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id_token": {
+                      "type": "string",
+                      "description": "A JWT containing the user's verified claims."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid grant_type or missing parameters."
+          },
+          "401": {
+            "description": "Unauthorized - Invalid code or client credentials."
+          }
+        }
+      }
+    },
+    "/v1/workspace": {
+      "get": {
+        "operationId": "WorkspaceController_getWorkspace",
+        "summary": "Get workspace information",
+        "description": "Retrieve workspace details including app count",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Workspace information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          }
+        },
+        "tags": [
+          "Workspace API - Workspace"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps": {
+      "post": {
+        "operationId": "WorkspaceAppsController_createApp",
+        "summary": "Create a new app",
+        "description": "Create a new application in the workspace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "App created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAppDto"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL of the newly created app (e.g., /v1/apps/FK5b0KSM).",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "WorkspaceAppsController_listApps",
+        "summary": "List all apps",
+        "description": "Get all applications in the workspace with pagination",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Apps retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedAppsResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/batch": {
+      "post": {
+        "operationId": "WorkspaceAppsController_batchCreateApps",
+        "summary": "Batch create apps",
+        "description": "Create multiple applications at once in the workspace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchCreateAppsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Apps created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceBatchCreateAppsResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/redirect-uris": {
+      "get": {
+        "operationId": "WorkspaceAppsController_getRedirectUris",
+        "summary": "Get redirect URIs",
+        "description": "Get the redirect URIs for an application",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Redirect URIs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateRedirectUrisDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "WorkspaceAppsController_updateRedirectUris",
+        "summary": "Update redirect URIs",
+        "description": "Update the redirect URIs for an application",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRedirectUrisDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Redirect URIs updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAppDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/webhook-config": {
+      "get": {
+        "operationId": "WorkspaceAppsController_getWebhookConfig",
+        "summary": "Get webhook configuration",
+        "description": "Get the webhook configuration for an application",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook configuration retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateWebhookConfigDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "WorkspaceAppsController_updateWebhookConfig",
+        "summary": "Update webhook configuration",
+        "description": "Update webhook configuration for an application",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWebhookConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook configuration updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAppDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/webhook-config/rotate-secret": {
+      "post": {
+        "operationId": "WorkspaceAppsController_rotateWebhookSecret",
+        "summary": "Rotate webhook secret",
+        "description": "Generate a new webhook secret for an application",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook secret rotated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "secret": {
+                      "type": "string",
+                      "example": "whsec_..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/providers": {
+      "get": {
+        "operationId": "WorkspaceAppsController_listProviders",
+        "summary": "List activation summaries for all providers on an app",
+        "description": "Returns a lightweight per-provider activation state summary for every provider that has been enabled on the app. Useful for rendering a multi-provider dashboard without N round-trips. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAppProvidersResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}": {
+      "get": {
+        "operationId": "WorkspaceAppsController_getApp",
+        "summary": "Get app details",
+        "description": "Retrieve details of a specific application",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAppDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "WorkspaceAppsController_patchApp",
+        "summary": "Patch app",
+        "description": "Partially update an existing application configuration (name, redirect URIs, webhook, default redirects)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAppDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "App updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAppDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "WorkspaceAppsController_deleteApp",
+        "summary": "Delete app",
+        "description": "Delete an application from the workspace",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App deleted successfully"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Apps"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/providers/{providerId}/activation/steps": {
+      "get": {
+        "operationId": "WorkspaceActivationController_getActivationSteps",
+        "summary": "Get activation steps",
+        "description": "Get computed activation steps for a specific provider",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "providerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activation steps retrieved successfully"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Activation"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/providers/{providerId}/activation": {
+      "patch": {
+        "operationId": "WorkspaceActivationController_enableProvider",
+        "summary": "Enable or disable provider",
+        "description": "Enable or disable a provider",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "providerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceEnableProviderBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Provider updated successfully"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Activation"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/providers/{providerId}/activation/form": {
+      "post": {
+        "operationId": "WorkspaceActivationController_submitActivationForm",
+        "summary": "Submit activation form",
+        "description": "Submit the activation request form for provider activation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "providerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceSubmitActivationFormDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Activation form submitted successfully",
+            "headers": {
+              "Location": {
+                "description": "URL of the submitted activation form.",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Activation"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/providers/{providerId}/activation/documents": {
+      "post": {
+        "operationId": "WorkspaceActivationController_uploadDocuments",
+        "summary": "Upload activation documents",
+        "description": "Upload documents required for provider activation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "providerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Document uploaded successfully"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Activation"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/providers/{providerId}/activation/documents/{documentId}": {
+      "delete": {
+        "operationId": "WorkspaceActivationController_deleteDocument",
+        "summary": "Delete an activation document",
+        "description": "Remove an uploaded activation document. Deletion is blocked once the document has been processed (approved) by review.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "providerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "documentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document deleted successfully"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App or document not found"
+          },
+          "409": {
+            "description": "Document has already been processed and cannot be deleted"
+          }
+        },
+        "tags": [
+          "Workspace API - Activation"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/workflows/node-types": {
+      "get": {
+        "operationId": "WorkspaceWorkflowController_getNodeTypes",
+        "summary": "List available node types",
+        "description": "Returns all available flow node types with their fields and placement constraints.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Node type catalog"
+          }
+        },
+        "tags": [
+          "Workspace API - Workflows"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/workflows": {
+      "post": {
+        "operationId": "WorkspaceWorkflowController_createWorkflow",
+        "summary": "Create a workflow",
+        "description": "Create a new workflow for the app. Provider keys in `providers` must exist in `app.providers`. Maximum 100 workflows per app. If `workflowId` is omitted, it is auto-generated from `name`.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkflowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workflow created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL of the newly created workflow.",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (invalid provider key, max limit reached)"
+          },
+          "404": {
+            "description": "App not found"
+          },
+          "409": {
+            "description": "Workflow ID already exists"
+          }
+        },
+        "tags": [
+          "Workspace API - Workflows"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "WorkspaceWorkflowController_listWorkflows",
+        "summary": "List all workflows",
+        "description": "Returns all workflows for the app, including the default workflow.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Workflows"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/workflows/{workflowId}": {
+      "get": {
+        "operationId": "WorkspaceWorkflowController_getWorkflow",
+        "summary": "Get a workflow",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workflowId",
+            "required": true,
+            "in": "path",
+            "description": "Workflow identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "App or workflow not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Workflows"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "WorkspaceWorkflowController_updateWorkflow",
+        "summary": "Update a workflow",
+        "description": "Partially update a workflow. Only provided fields are changed. Provider keys in `providers` must exist in `app.providers`.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workflowId",
+            "required": true,
+            "in": "path",
+            "description": "Workflow identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWorkflowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workflow updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (invalid provider key)"
+          },
+          "404": {
+            "description": "App or workflow not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Workflows"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "WorkspaceWorkflowController_deleteWorkflow",
+        "summary": "Delete a workflow",
+        "description": "Delete a workflow. Cannot delete the default workflow — change default first via set-default.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workflowId",
+            "required": true,
+            "in": "path",
+            "description": "Workflow identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cannot delete default workflow"
+          },
+          "404": {
+            "description": "App or workflow not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Workflows"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/workflows/{workflowId}/set-default": {
+      "post": {
+        "operationId": "WorkspaceWorkflowController_setDefault",
+        "summary": "Set a workflow as default",
+        "description": "Set this workflow as the app default. The default workflow is used when no workflow_id is specified in OIDC authorize.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workflowId",
+            "required": true,
+            "in": "path",
+            "description": "Workflow identifier to set as default",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "App or workflow not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Workflows"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/production-tests": {
+      "get": {
+        "operationId": "WorkspaceProductionTestController_listChallenges",
+        "summary": "List production test challenges",
+        "description": "Returns all production test challenges for the app.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenges retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnifiedChallengeItemDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Production Tests"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "WorkspaceProductionTestController_createChallenge",
+        "summary": "Create a production test challenge",
+        "description": "Creates a new production test challenge for the app. The app name is automatically used as the host name.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductionTestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Challenge created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengeRequestResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URL of the newly created production-test challenge.",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Production Tests"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/production-tests/{challengeId}/report": {
+      "get": {
+        "operationId": "WorkspaceProductionTestController_getChallengeReport",
+        "summary": "Get challenge report",
+        "description": "Returns challenge info with per-provider completion count and average completion time.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "App client ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "challengeId",
+            "required": true,
+            "in": "path",
+            "description": "Challenge ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge report retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengeReportResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App or challenge not found"
+          }
+        },
+        "tags": [
+          "Workspace API - Production Tests"
+        ],
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ]
+      }
+    },
+    "/v1/console/api-keys": {
+      "post": {
+        "operationId": "ConsoleController_createApiKey",
+        "summary": "Create workspace API key",
+        "description": "Create a new API key for accessing workspace management APIs. The secret is only shown once.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApiKeyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "API key created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "Console - API Keys"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "ConsoleController_listApiKeys",
+        "summary": "List workspace API keys",
+        "description": "List all API keys for the workspace. Secrets are never returned.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of API keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApiKeyResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "Console - API Keys"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/v1/console/api-keys/{id}/revoke": {
+      "post": {
+        "operationId": "ConsoleController_revokeApiKey",
+        "summary": "Revoke API key",
+        "description": "Revoke an API key. Revoked keys can no longer be used to call workspace APIs.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "API key revoked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeApiKeyResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "API key not found"
+          }
+        },
+        "tags": [
+          "Console - API Keys"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/v1/console/api-keys/{id}": {
+      "delete": {
+        "operationId": "ConsoleController_deleteApiKey",
+        "summary": "Delete API key",
+        "description": "Delete an API key. Deleted keys can no longer be used to call workspace APIs.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "API key deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeApiKeyResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "API key not found"
+          }
+        },
+        "tags": [
+          "Console - API Keys"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/v1/apps/{id}/rotate-client-secret": {
+      "post": {
+        "description": "Generates a new clientSecret for the App. The old secret is immediately invalidated. The new secret is returned exactly once.",
+        "operationId": "WorkspaceAppsController_rotateClientSecret",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotateClientSecretResponseDto"
+                }
+              }
+            },
+            "description": "New clientSecret generated"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "404": {
+            "description": "App not found"
+          }
+        },
+        "security": [
+          {
+            "workspace-api-key": []
+          }
+        ],
+        "summary": "Rotate client secret",
+        "tags": [
+          "Workspace API - Apps"
+        ]
+      }
+    },
+    "/v1/verifications/{verificationId}/evidence": {
+      "get": {
+        "operationId": "VerificationController_getVerificationEvidence",
+        "summary": "Get evidence for a verification",
+        "description": "Returns the presentation-ready evidence object captured during verification (object format). If evidence is not available or verification is incomplete, appropriate errors are returned.",
+        "parameters": [
+          {
+            "name": "verificationId",
+            "required": true,
+            "in": "path",
+            "description": "Unique verification identifier",
+            "example": "1234567890abcdef",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evidence retrieved successfully"
+          },
+          "400": {
+            "description": "Verification is not completed or has no evidence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": {
+                      "code": "evidence_not_available",
+                      "message": "Evidence is not available for this verification",
+                      "details": {
+                        "status": "initiated",
+                        "verificationId": "123..."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Verifications"
+        ],
+        "security": [
+          {
+            "basic-auth": []
+          }
+        ]
+      }
+    },
+    "/v1/verifications/{verificationId}/userinfo": {
+      "get": {
+        "operationId": "VerificationController_getVerificationUserinfo",
+        "summary": "Get userinfo for a verification",
+        "description": "Returns user information aligned with OIDC /userinfo output. Contains authentication context, user claims, provenance, and missing_claims.",
+        "parameters": [
+          {
+            "name": "verificationId",
+            "required": true,
+            "in": "path",
+            "description": "Unique verification identifier",
+            "example": "1234567890abcdef",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Userinfo retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetVerificationUserInfoResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Verification is not completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": {
+                      "code": "verification_not_completed",
+                      "message": "Verification must be completed to fetch userinfo",
+                      "details": {
+                        "status": "failed",
+                        "verificationId": "123..."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Verifications"
+        ],
+        "security": [
+          {
+            "basic-auth": []
+          }
+        ]
+      }
+    },
+    "/v1/verifications/dc-request": {
+      "post": {
+        "operationId": "VerificationController_createDcRequest",
+        "summary": "Create DC request for Digital Credentials flow",
+        "description": "Creates the EID session for a DC flowType verification. This is a deferred session creation - the HopaeConnect session was created during createVerification, and this endpoint creates the EID session (verifier request) when the client is ready to display the QR code.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DcRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DC request created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DcRequestResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid flow type or verification status"
+          },
+          "404": {
+            "description": "Verification not found"
+          }
+        },
+        "tags": [
+          "Verifications"
+        ],
+        "security": [
+          {
+            "basic-auth": []
+          }
+        ]
+      }
+    },
+    "/v1/providers/{providerId}/configuration": {
+      "get": {
+        "operationId": "ProvidersController_getProviderConfiguration",
+        "summary": "Get provider configuration",
+        "description": "Get provider-specific configuration including required userData fields and their options. For example, iDIN requires a presetBank field with available Dutch bank options.",
+        "parameters": [
+          {
+            "name": "providerId",
+            "required": true,
+            "in": "path",
+            "description": "Provider identifier (e.g., idin)",
+            "example": "idin",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provider configuration with required fields and options",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderConfigurationDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Providers"
+        ],
+        "security": [
+          {
+            "basic-auth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Basic authentication using clientId and clientSecret. For direct API calls, format the Authorization header as `Authorization: Basic <base64(clientId:clientSecret)>`. In the Mintlify playground, enter the clientId and clientSecret in the Basic Auth panel and the header is generated automatically."
+      },
+      "workspaceApiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "Workspace API key authentication. Pass your workspace API key as `Authorization: Bearer sk_workspace_...`."
+      },
+      "consoleJwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Console JWT authentication. Issued by Clerk after Console login."
+      },
+      "workspace-api-key": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "app-basic": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
+    "schemas": {
+      "CreateAppDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "FlowNodeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "nd_ab12cd34"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "request",
+              "response",
+              "verification",
+              "check-min-loa",
+              "check-claim",
+              "evaluate",
+              "if"
+            ]
+          },
+          "next": {
+            "type": "object",
+            "description": "Next: string (single output) or NextRoute[] (IF branching)"
+          },
+          "config": {
+            "type": "object",
+            "description": "Type-specific configuration (max depth 5, max 50 keys per level)"
+          }
+        },
+        "required": [
+          "id",
+          "type"
+        ]
+      },
+      "WorkflowEntryDto": {
+        "type": "object",
+        "properties": {
+          "workflowId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "entryNodeId": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlowNodeDto"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workflowId",
+          "name",
+          "entryNodeId",
+          "nodes"
+        ]
+      },
+      "WebhookConfigDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          },
+          "retryAttempts": {
+            "type": "number",
+            "default": 3
+          },
+          "timeoutSeconds": {
+            "type": "number",
+            "default": 10
+          },
+          "secret": {
+            "type": "string",
+            "description": "Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret."
+          },
+          "events": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "enabled",
+          "retryAttempts",
+          "timeoutSeconds",
+          "events"
+        ]
+      },
+      "CustomDomainDnsRecordDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Logical key for this DNS record (e.g. oidc, web, ssl)"
+          },
+          "type": {
+            "type": "string",
+            "description": "DNS record type (e.g. CNAME, TXT)"
+          },
+          "host": {
+            "type": "string",
+            "description": "Root domain / zone for this record (e.g. example.com)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Record name within the zone (e.g. @, login, _acme-challenge)"
+          },
+          "value": {
+            "type": "string",
+            "description": "Record target value we provide"
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional human-friendly description for console UI"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "host",
+          "name",
+          "value",
+          "required"
+        ]
+      },
+      "CustomDomainStateDto": {
+        "type": "object",
+        "properties": {
+          "oidcDomain": {
+            "type": "string",
+            "description": "Custom domain for OIDC backend (host only, e.g. verify.example.com)"
+          },
+          "webDomain": {
+            "type": "string",
+            "description": "Custom domain for hosted UI (host only, e.g. connect.example.com)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unconfigured",
+              "awaiting_dns",
+              "verifying",
+              "active",
+              "invalid"
+            ]
+          },
+          "requiredAction": {
+            "type": "string",
+            "enum": [
+              "none",
+              "add_cname",
+              "waiting",
+              "verify",
+              "contact_support",
+              "retry"
+            ]
+          },
+          "statusMessage": {
+            "type": "string",
+            "description": "Short hint for console users about the current step"
+          },
+          "dnsRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomDomainDnsRecordDto"
+            }
+          },
+          "lastCheckedAt": {
+            "type": "string",
+            "description": "Last time the domain status was checked (ISO8601)"
+          }
+        }
+      },
+      "AppDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "clientSecret": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "providers": {
+            "type": "object"
+          },
+          "defaultWorkflowId": {
+            "type": "string"
+          },
+          "workflows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEntryDto"
+            }
+          },
+          "organizationId": {
+            "type": "string"
+          },
+          "webhookConfig": {
+            "$ref": "#/components/schemas/WebhookConfigDto"
+          },
+          "defaultSuccessRedirectUri": {
+            "type": "string"
+          },
+          "defaultFailureRedirectUri": {
+            "type": "string"
+          },
+          "customDomain": {
+            "$ref": "#/components/schemas/CustomDomainStateDto"
+          }
+        },
+        "required": [
+          "name",
+          "redirectUris",
+          "clientId",
+          "clientSecret",
+          "appId",
+          "providers",
+          "organizationId"
+        ]
+      },
+      "AppsDto": {
+        "type": "object",
+        "properties": {
+          "apps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "apps"
+        ]
+      },
+      "PromoteToProductionRequestDto": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "clone",
+              "default"
+            ],
+            "default": "default"
+          }
+        },
+        "required": [
+          "appId"
+        ]
+      },
+      "PromoteToProductionResponseDto": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "providers": {
+            "type": "object"
+          },
+          "defaultWorkflowId": {
+            "type": "string"
+          },
+          "workflows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEntryDto"
+            }
+          },
+          "organizationId": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "clone",
+              "default"
+            ]
+          }
+        },
+        "required": [
+          "appId",
+          "clientId",
+          "name",
+          "providers",
+          "organizationId",
+          "mode"
+        ]
+      },
+      "UpdateAppDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string",
+            "description": "App-level brand logo (base64 data URL). Pass an empty string to remove the logo."
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "webhookConfig": {
+            "$ref": "#/components/schemas/WebhookConfigDto"
+          },
+          "defaultSuccessRedirectUri": {
+            "type": "string"
+          },
+          "defaultFailureRedirectUri": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateCustomDomainDto": {
+        "type": "object",
+        "properties": {
+          "oidcDomain": {
+            "type": "string",
+            "description": "Custom domain for OIDC backend (host only)"
+          },
+          "webDomain": {
+            "type": "string",
+            "description": "Custom domain for hosted UI (full origin)"
+          }
+        }
+      },
+      "CreateLikeDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "clientId",
+          "providerId"
+        ]
+      },
+      "LikeDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "clientId",
+          "providerId",
+          "createdAt"
+        ]
+      },
+      "AuthenticationHint": {
+        "type": "object",
+        "properties": {
+          "personalNumber": {
+            "type": "string",
+            "description": "Swedish personal number (BankID)"
+          },
+          "cprNumber": {
+            "type": "string",
+            "description": "Danish CPR number (MitID)"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Phone number (UAE Pass)"
+          },
+          "nric": {
+            "type": "string",
+            "description": "Singapore NRIC (Singpass)"
+          },
+          "emiratesId": {
+            "type": "string",
+            "description": "UAE Emirates ID"
+          },
+          "documentNumber": {
+            "type": "string",
+            "description": "Document number (mDL)"
+          },
+          "mobileNumber": {
+            "type": "string",
+            "description": "Alternative mobile number"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address"
+          }
+        }
+      },
+      "ReturnContext": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "description": "State parameter for session binding"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "UICustomization": {
+        "type": "object",
+        "properties": {
+          "colorScheme": {
+            "type": "string",
+            "description": "Color scheme"
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "Logo URL"
+          },
+          "theme": {
+            "type": "string",
+            "description": "Theme",
+            "enum": [
+              "light",
+              "dark"
+            ]
+          }
+        }
+      },
+      "CreateVerificationRequestDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "Identity provider",
+            "example": "bankidse"
+          },
+          "redirectUri": {
+            "type": "string",
+            "description": "URL to redirect after verification",
+            "example": "https://example.com/callback"
+          },
+          "webhookUrl": {
+            "type": "string",
+            "description": "Webhook URL for async notifications",
+            "example": "https://example.com/webhook"
+          },
+          "requestedLoa": {
+            "type": "number",
+            "description": "Requested Level of Assurance (numeric, maps to loa:{value})",
+            "example": 3
+          },
+          "loaStrategy": {
+            "type": "string",
+            "description": "LoA handling strategy: min (strict - fail without data), lax (fail but provide data), allow (skip validation)",
+            "enum": [
+              "min",
+              "lax",
+              "allow"
+            ],
+            "example": "lax",
+            "default": "lax"
+          },
+          "requestedClaims": {
+            "description": "Claims to request from the eID provider",
+            "example": [
+              "given_name",
+              "family_name",
+              "birthdate"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Purpose of verification",
+            "example": "account_opening"
+          },
+          "referenceId": {
+            "type": "string",
+            "description": "Your internal reference ID",
+            "example": "ORDER-2024-12345"
+          },
+          "locale": {
+            "type": "string",
+            "description": "Locale for user interface",
+            "example": "en, en-US"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Custom metadata"
+          },
+          "userData": {
+            "description": "User data for identity provider authentication",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationHint"
+              }
+            ]
+          },
+          "initiationMethod": {
+            "type": "string",
+            "description": "Initiation method preference",
+            "enum": [
+              "auto",
+              "qrOnly",
+              "appOnly"
+            ]
+          },
+          "flowType": {
+            "type": "string",
+            "description": "Preferred verification flow",
+            "enum": [
+              "push",
+              "qr",
+              "redirect",
+              "dc"
+            ]
+          },
+          "returnContext": {
+            "description": "Return context configuration",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReturnContext"
+              }
+            ]
+          },
+          "uiCustomization": {
+            "description": "UI customization options",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UICustomization"
+              }
+            ]
+          },
+          "matchData": {
+            "type": "object",
+            "description": "Expected values to compare against the upstream verification result. Required when `providerId` is a match-capable provider. Field keys are provider-native — refer to the provider's match field schema. The keys submitted here populate `match.submitted_fields` in the result.",
+            "example": {
+              "fullName": "Test User",
+              "dateOfBirth": "1990-01-01"
+            }
+          },
+          "privateMode": {
+            "type": "boolean",
+            "description": "Enable private mode to block access to user information from all data endpoints. When enabled, only v1/tpas/verify-code API can check verified status.",
+            "example": false,
+            "default": false
+          }
+        },
+        "required": [
+          "providerId",
+          "purpose"
+        ]
+      },
+      "VerificationActionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of action required",
+            "enum": [
+              "redirect",
+              "qr",
+              "push",
+              "deeplink"
+            ],
+            "example": "redirect"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL for redirect or deep link actions",
+            "example": "https://sv-lite.identt.pl/self-verify/?document_id=xxx&session_id=yyy"
+          },
+          "message": {
+            "type": "string",
+            "description": "User-facing message describing the action",
+            "example": "Please complete face liveness check"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional action-specific metadata",
+            "example": {
+              "autoOpenAttempted": true
+            }
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "flowDetails": {
+        "type": "object",
+        "properties": {
+          "qrData": {
+            "type": "string",
+            "description": "QR code data"
+          },
+          "authorizationUrl": {
+            "type": "string",
+            "description": "Authorization URL for redirect flow"
+          },
+          "autoStartToken": {
+            "type": "string",
+            "description": "Auto-start token"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message displayed to user"
+          },
+          "hintProvided": {
+            "type": "object",
+            "description": "Authentication hint provided"
+          },
+          "state": {
+            "type": "string",
+            "description": "State parameter for CSRF protection"
+          },
+          "sessionData": {
+            "type": "object",
+            "description": "Session data"
+          },
+          "pushReference": {
+            "type": "string",
+            "description": "Push notification reference"
+          },
+          "hintAccepted": {
+            "type": "boolean",
+            "description": "Whether hint was accepted by provider"
+          },
+          "maskedIdentifier": {
+            "type": "string",
+            "description": "Masked user identifier"
+          },
+          "messageDisplayed": {
+            "type": "string",
+            "description": "Message displayed to user"
+          },
+          "displayInstructions": {
+            "type": "object",
+            "description": "Localized display instructions"
+          },
+          "verificationCode": {
+            "type": "string",
+            "description": "Verification code for push-based flows (Smart-ID, Mobile-ID)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description for how to use the verification code"
+          },
+          "deeplink": {
+            "type": "string",
+            "description": "Deep link URL for mobile wallet apps (mDL, EUDI Wallet, etc.)"
+          },
+          "linkData": {
+            "type": "string",
+            "description": "Direct link URL for QR/DC flows"
+          },
+          "action": {
+            "description": "Action required by user (e.g., redirect for liveness check)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationActionDto"
+              }
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Provider-specific metadata (e.g., edoCode)"
+          }
+        }
+      },
+      "PollingInfo": {
+        "type": "object",
+        "properties": {
+          "recommendedInterval": {
+            "type": "number",
+            "description": "Recommended polling interval in milliseconds"
+          },
+          "maxDuration": {
+            "type": "number",
+            "description": "Maximum polling duration in milliseconds"
+          }
+        },
+        "required": [
+          "recommendedInterval"
+        ]
+      },
+      "ProviderInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Provider display name"
+          },
+          "transactionId": {
+            "type": "string",
+            "description": "Provider transaction ID"
+          },
+          "requirements": {
+            "type": "object",
+            "description": "Provider requirements"
+          }
+        }
+      },
+      "RedirectBehavior": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "description": "HTTP redirect method"
+          },
+          "target": {
+            "type": "string",
+            "description": "Target window",
+            "enum": [
+              "_self",
+              "_blank"
+            ]
+          },
+          "mobileBehavior": {
+            "type": "string",
+            "description": "Mobile behavior"
+          }
+        },
+        "required": [
+          "method",
+          "target",
+          "mobileBehavior"
+        ]
+      },
+      "UserConfirmation": {
+        "type": "object",
+        "properties": {
+          "confirmedIdentity": {
+            "type": "object",
+            "description": "Identity confirmation status"
+          }
+        },
+        "required": [
+          "confirmedIdentity"
+        ]
+      },
+      "CreateVerificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "description": "Unique verification ID",
+            "example": "ver_2hJ8kL9mN3pQ5rS7"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current verification status",
+            "enum": [
+              "initiated",
+              "awaiting_user_action",
+              "authenticating",
+              "processing",
+              "completed",
+              "failed",
+              "expired",
+              "cancelled"
+            ]
+          },
+          "providerId": {
+            "type": "string",
+            "description": "Identity provider used"
+          },
+          "flowType": {
+            "type": "string",
+            "description": "Verification flow type",
+            "enum": [
+              "push",
+              "qr",
+              "redirect",
+              "dc"
+            ]
+          },
+          "flowDetails": {
+            "description": "Initiation details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/flowDetails"
+              }
+            ]
+          },
+          "polling": {
+            "description": "Polling configuration",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PollingInfo"
+              }
+            ]
+          },
+          "providerInfo": {
+            "description": "Provider information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProviderInfo"
+              }
+            ]
+          },
+          "redirectBehavior": {
+            "description": "Redirect behavior configuration",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RedirectBehavior"
+              }
+            ]
+          },
+          "userConfirmation": {
+            "description": "User confirmation status",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserConfirmation"
+              }
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Expiration timestamp"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "links": {
+            "type": "string",
+            "description": "Related links"
+          },
+          "verification_model": {
+            "type": "string",
+            "enum": [
+              "disclosure",
+              "match"
+            ],
+            "description": "Resolved verification model for this verification, derived from the provider's capability. Returned only on the 201 creation response so the RP can branch on the expected userinfo shape ahead of time."
+          }
+        },
+        "required": [
+          "verificationId",
+          "status",
+          "providerId",
+          "expiresAt",
+          "createdAt",
+          "links"
+        ]
+      },
+      "ErrorInfo": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Error type"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional error details"
+          },
+          "occurredAt": {
+            "type": "string",
+            "description": "Timestamp when error occurred"
+          },
+          "providerError": {
+            "type": "object",
+            "description": "Provider-specific error information"
+          }
+        },
+        "required": [
+          "type",
+          "code",
+          "message"
+        ]
+      },
+      "MatchFieldDetailDto": {
+        "type": "object",
+        "properties": {
+          "matched": {
+            "type": "boolean",
+            "description": "Whether this field's submitted value matched the authoritative source."
+          },
+          "submitted_value": {
+            "type": "string",
+            "description": "Echo of the value the RP submitted via `matchData`. Present in `/userinfo` responses for matchData fields only; never present on passthrough verifier keys (e.g., `face_photo_disparity`). Omitted from id_token claims."
+          },
+          "similarity": {
+            "type": "number",
+            "description": "Similarity score (0–100). Present only when the upstream verifier returned a similarity score."
+          }
+        },
+        "required": [
+          "matched"
+        ]
+      },
+      "MatchEnvelopeDto": {
+        "type": "object",
+        "description": "Result envelope for match-capable providers. Present only when `verification_model` is `match`.",
+        "properties": {
+          "matched": {
+            "type": "boolean",
+            "description": "Aggregate match outcome across all submitted fields."
+          },
+          "granularity": {
+            "type": "string",
+            "enum": [
+              "aggregate",
+              "per_field"
+            ],
+            "description": "Determines whether `details` is included. `per_field` exposes per-field outcomes; `aggregate` exposes only the overall `matched` flag."
+          },
+          "submitted_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Field keys the RP supplied in `matchData`. Provider-native names — not normalised."
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MatchFieldDetailDto"
+            },
+            "description": "Per-field outcomes, keyed by field name. Present only when `granularity` is `per_field`. May include verifier keys beyond `submitted_fields` (e.g., `face_photo_disparity` from mObywatel) when the upstream provider emits them."
+          }
+        },
+        "required": [
+          "matched",
+          "granularity",
+          "submitted_fields"
+        ]
+      },
+      "GetVerificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "description": "Verification ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status",
+            "enum": [
+              "initiated",
+              "awaiting_user_action",
+              "authenticating",
+              "processing",
+              "completed",
+              "failed",
+              "expired",
+              "cancelled"
+            ]
+          },
+          "providerId": {
+            "type": "string",
+            "description": "Provider name"
+          },
+          "workflowId": {
+            "type": "string",
+            "description": "Workflow ID"
+          },
+          "flowType": {
+            "type": "string",
+            "description": "Verification flow",
+            "enum": [
+              "push",
+              "qr",
+              "redirect",
+              "dc"
+            ]
+          },
+          "flowDetails": {
+            "description": "Initiation details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/flowDetails"
+              }
+            ]
+          },
+          "verifiedAt": {
+            "type": "string",
+            "description": "Verification timestamp"
+          },
+          "failedAt": {
+            "type": "string",
+            "description": "Failure timestamp"
+          },
+          "cancelledAt": {
+            "type": "string",
+            "description": "Cancellation timestamp"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Expiration timestamp"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "referenceId": {
+            "type": "string",
+            "description": "Reference ID"
+          },
+          "error": {
+            "description": "Error information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ErrorInfo"
+              }
+            ]
+          },
+          "acr": {
+            "type": "string",
+            "description": "Authentication Context Class Reference"
+          },
+          "hopae_loa": {
+            "type": "number",
+            "description": "Hopae Level of Assurance"
+          },
+          "hopae_loa_label": {
+            "type": "string",
+            "enum": [
+              "none",
+              "low",
+              "substantial",
+              "high",
+              "qualified"
+            ],
+            "description": "Hopae LoA label. One of `none` (LoA 1), `low` (2), `substantial` (3), `high` (4), `qualified` (5)."
+          },
+          "links": {
+            "type": "string",
+            "description": "Related links"
+          },
+          "action": {
+            "description": "Action required by user (e.g., redirect for liveness check)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationActionDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "verificationId",
+          "status",
+          "providerId",
+          "links"
+        ]
+      },
+      "VerificationUserBlockDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "VerificationProvenanceDto": {
+        "type": "object",
+        "properties": {
+          "presentation": {
+            "type": "object",
+            "description": "Presentation context"
+          },
+          "_metadata": {
+            "type": "object",
+            "description": "Metadata"
+          }
+        }
+      },
+      "GetVerificationUserInfoResponseDto": {
+        "type": "object",
+        "properties": {
+          "sub": {
+            "type": "string",
+            "description": "Pairwise subject (accountId)"
+          },
+          "acr": {
+            "type": "string",
+            "description": "Authentication Context Class Reference"
+          },
+          "hopae_loa": {
+            "type": "number",
+            "description": "Hopae Level of Assurance"
+          },
+          "amr": {
+            "type": "object",
+            "description": "Authentication Methods Reference"
+          },
+          "missing_claims": {
+            "description": "Missing claim names",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "user": {
+            "description": "User profile claims. `null` for pure match flows (`verification_model: \"match\"`).",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationUserBlockDto"
+              }
+            ]
+          },
+          "provenance": {
+            "description": "Source provenance",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationProvenanceDto"
+              }
+            ]
+          },
+          "provider_id": {
+            "type": "string",
+            "description": "Provider identifier that authenticated the subject. Mirrors the single element in `amr` for forward compatibility."
+          },
+          "verification_model": {
+            "type": "string",
+            "enum": [
+              "disclosure",
+              "match"
+            ],
+            "description": "Always present. Indicates which top-level payload to interpret: `disclosure` (user attributes under `user`) or `match` (comparison envelope under `match`, with `user: null`). Legacy verifications without a stored model default to `disclosure`."
+          },
+          "match": {
+            "description": "Match envelope. Present only when `verification_model` is `match`.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MatchEnvelopeDto"
+              }
+            ]
+          }
+        }
+      },
+      "DcRequestDto": {
+        "type": "object",
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "description": "Verification ID"
+          },
+          "userData": {
+            "description": "User data for DC request (docType, protocol, etc.)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthenticationHint"
+              }
+            ]
+          }
+        },
+        "required": [
+          "verificationId"
+        ]
+      },
+      "DcRequestResponseDto": {
+        "type": "object",
+        "properties": {
+          "requestBase64": {
+            "type": "string",
+            "description": "Base64 encoded request data"
+          },
+          "dcSessionId": {
+            "type": "string",
+            "description": "DC session ID from EID service"
+          }
+        },
+        "required": [
+          "requestBase64",
+          "dcSessionId"
+        ]
+      },
+      "ChallengeV2ResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "completedAt": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "challengeMode": {
+            "type": "string"
+          },
+          "sponsor": {
+            "type": "object"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "expiresAt",
+          "createdAt",
+          "isActive",
+          "challengeMode"
+        ]
+      },
+      "ChallengeRequestResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object"
+          },
+          "challengeId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "status",
+          "payload",
+          "createdAt"
+        ]
+      },
+      "UnifiedChallengeItemDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "challenge",
+              "request"
+            ]
+          },
+          "challenge": {
+            "$ref": "#/components/schemas/ChallengeV2ResponseDto"
+          },
+          "request": {
+            "$ref": "#/components/schemas/ChallengeRequestResponseDto"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "ProviderBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string"
+          },
+          "providerName": {
+            "type": "string"
+          },
+          "claimCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "providerId",
+          "providerName",
+          "claimCount"
+        ]
+      },
+      "ChallengeReportStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalParticipations": {
+            "type": "number"
+          },
+          "totalClaims": {
+            "type": "number"
+          },
+          "providerBreakdown": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProviderBreakdownDto"
+            }
+          }
+        },
+        "required": [
+          "totalParticipations",
+          "totalClaims",
+          "providerBreakdown"
+        ]
+      },
+      "ChallengeReportResponseDto": {
+        "type": "object",
+        "properties": {
+          "challenge": {
+            "$ref": "#/components/schemas/ChallengeV2ResponseDto"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/ChallengeReportStatsDto"
+          }
+        },
+        "required": [
+          "challenge",
+          "stats"
+        ]
+      },
+      "CreateChallengeRequestDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "sourceType": {
+            "type": "string"
+          },
+          "questionCount": {
+            "type": "number"
+          },
+          "providerIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "maxStampClaims": {
+            "type": "number"
+          },
+          "targetPlatform": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "clientId",
+          "title"
+        ]
+      },
+      "UpdateChallengeRequestPayloadDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
+      "TransactionResultDto": {
+        "type": "object",
+        "properties": {
+          "loa": {
+            "type": "string",
+            "description": "LoA identifier (loa:{level})"
+          },
+          "amr": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "channel": {
+            "type": "object"
+          }
+        }
+      },
+      "TransactionAttributesDto": {
+        "type": "object",
+        "properties": {
+          "requested": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "provided": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "missing": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TransactionErrorDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "TransactionEventDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "timestamp"
+        ]
+      },
+      "TransactionResponseDto": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "workflowId": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "oidc",
+              "api"
+            ]
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "initiated",
+              "awaiting_user_action",
+              "authenticating",
+              "processing",
+              "completed",
+              "failed",
+              "cancelled",
+              "expired"
+            ]
+          },
+          "sessionExpiresAt": {
+            "type": "string"
+          },
+          "meteredAt": {
+            "type": "string"
+          },
+          "deviceType": {
+            "type": "string"
+          },
+          "webhookUrl": {
+            "type": "string"
+          },
+          "result": {
+            "$ref": "#/components/schemas/TransactionResultDto"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/TransactionAttributesDto"
+          },
+          "error": {
+            "$ref": "#/components/schemas/TransactionErrorDto"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionEventDto"
+            }
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "transactionId",
+          "clientId",
+          "providerId",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PaginatedTransactionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionResponseDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "offset": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "WorkspaceResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "org_3C4Ysr9QkNkdbAZR5AD0uoLpgWl"
+          },
+          "apps_count": {
+            "type": "number",
+            "example": 12
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2025-11-13T09:00:00.000Z",
+            "description": "ISO-8601 workspace creation timestamp"
+          },
+          "created_at": {
+            "type": "number",
+            "example": 1731465600,
+            "description": "Unix timestamp of workspace creation (seconds since epoch)"
+          }
+        },
+        "required": [
+          "id",
+          "apps_count",
+          "createdAt",
+          "created_at"
+        ]
+      },
+      "WorkspaceAppDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string",
+            "description": "App-level brand logo (base64 data URL)"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "clientSecret": {
+            "type": "string"
+          },
+          "providers": {
+            "type": "object",
+            "description": "Contract-level provider configurations. Key = provider ID.",
+            "example": {
+              "bankidse": {
+                "enabled": true,
+                "config": {}
+              },
+              "frejaid": {
+                "enabled": false,
+                "config": {}
+              }
+            }
+          },
+          "defaultWorkflowId": {
+            "type": "string",
+            "example": "default",
+            "description": "ID of the default workflow used when workflow_id is not specified"
+          },
+          "workflows": {
+            "description": "Workflow profiles for the app",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowEntryDto"
+            }
+          },
+          "organizationId": {
+            "type": "string"
+          },
+          "webhookConfig": {
+            "$ref": "#/components/schemas/WebhookConfigDto"
+          },
+          "defaultSuccessRedirectUri": {
+            "type": "string"
+          },
+          "defaultFailureRedirectUri": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "redirectUris",
+          "clientId",
+          "clientSecret",
+          "providers",
+          "defaultWorkflowId",
+          "workflows",
+          "organizationId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "BatchCreateAppItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "webhookConfig": {
+            "$ref": "#/components/schemas/WebhookConfigDto"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "BatchCreateAppsDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchCreateAppItemDto"
+            }
+          },
+          "continueOnError": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "WorkspaceBatchCreateAppsResponseDto": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "successCount": {
+            "type": "number"
+          },
+          "errorCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "successCount",
+          "errorCount"
+        ]
+      },
+      "PaginatedAppsResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "offset": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "UpdateRedirectUrisDto": {
+        "type": "object",
+        "properties": {
+          "redirectUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "redirectUris"
+        ]
+      },
+      "UpdateWebhookConfigDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "retryAttempts": {
+            "type": "number"
+          },
+          "timeoutSeconds": {
+            "type": "number"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RotateClientSecretResponseDto": {
+        "type": "object",
+        "properties": {
+          "clientSecret": {
+            "type": "string",
+            "description": "The newly generated clientSecret. Persist immediately; cannot be retrieved later.",
+            "example": "a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4"
+          }
+        },
+        "required": [
+          "clientSecret"
+        ]
+      },
+      "AppProviderSummaryDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "example": "mitid",
+            "description": "Provider identifier"
+          },
+          "enabled": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether the provider is enabled on this app"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "in_progress",
+              "completed"
+            ],
+            "example": "completed",
+            "description": "Overall activation state derived from step completion"
+          },
+          "currentStep": {
+            "type": "string",
+            "example": "activated",
+            "description": "The type key of the current activation step"
+          },
+          "currentStepIndex": {
+            "type": "number",
+            "example": 3,
+            "description": "Zero-based index of the current step in the step sequence"
+          },
+          "stepCount": {
+            "type": "number",
+            "example": 4,
+            "description": "Total number of steps in this provider's activation sequence"
+          }
+        },
+        "required": [
+          "providerId",
+          "enabled",
+          "state",
+          "currentStep",
+          "currentStepIndex",
+          "stepCount"
+        ]
+      },
+      "ListAppProvidersResponseDto": {
+        "type": "object",
+        "properties": {
+          "providers": {
+            "description": "Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppProviderSummaryDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 3,
+            "description": "Total number of providers in this response"
+          }
+        },
+        "required": [
+          "providers",
+          "total"
+        ]
+      },
+      "WorkspaceEnableProviderBodyDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether to enable or disable the provider",
+            "example": true
+          }
+        },
+        "required": [
+          "enabled"
+        ]
+      },
+      "WorkspaceSubmitActivationFormDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Form data as key-value pairs",
+            "example": {
+              "legalCompanyName": "Acme Corp",
+              "registrationNumber": "12345678"
+            }
+          },
+          "saveToCompanyInfo": {
+            "type": "boolean",
+            "description": "If true, also persist matching fields to app companyInfo",
+            "default": false
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "CreateWorkflowDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "KYC Premium"
+          },
+          "entryNodeId": {
+            "type": "string",
+            "example": "nd_ab12cd34"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlowNodeDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "entryNodeId",
+          "nodes"
+        ]
+      },
+      "WorkflowResponseDto": {
+        "type": "object",
+        "properties": {
+          "workflowId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "entryNodeId": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlowNodeDto"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workflowId",
+          "name",
+          "entryNodeId",
+          "nodes"
+        ]
+      },
+      "UpdateWorkflowDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "entryNodeId": {
+            "type": "string"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlowNodeDto"
+            }
+          }
+        }
+      },
+      "CreateProductionTestDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Challenge title",
+            "example": "BankID SE Production Test"
+          },
+          "description": {
+            "type": "string",
+            "description": "Challenge description"
+          },
+          "providerIds": {
+            "description": "Provider IDs to test",
+            "example": [
+              "bankidse",
+              "smartid"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "targetPlatform": {
+            "type": "string",
+            "description": "Target platform filter",
+            "enum": [
+              "ios",
+              "android"
+            ]
+          },
+          "maxStamps": {
+            "type": "number",
+            "description": "Maximum number of stamps (first-come limit)",
+            "example": 3,
+            "minimum": 1
+          },
+          "allowDuplicateParticipation": {
+            "type": "boolean",
+            "description": "Whether to allow duplicate participation (same user + same provider)"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "CreateApiKeyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Backend CI"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ApiKeyResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "name": {
+            "type": "string",
+            "example": "Backend CI"
+          },
+          "secret": {
+            "type": "string",
+            "example": "sk_workspace_abc123...",
+            "description": "Full API key secret (only returned once at creation time — persist it immediately as it cannot be retrieved later)."
+          },
+          "last_used_at": {
+            "type": "number",
+            "example": 1731465600,
+            "description": "Unix timestamp"
+          },
+          "revoked_at": {
+            "type": "number",
+            "example": 1731465600,
+            "description": "Unix timestamp"
+          },
+          "created_at": {
+            "type": "number",
+            "example": 1731465600,
+            "description": "Unix timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "secret",
+          "created_at"
+        ]
+      },
+      "RevokeApiKeyResponseDto": {
+        "type": "object",
+        "properties": {
+          "revoked": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "revoked"
+        ]
+      },
+      "TestDeviceResponseDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Test email",
+            "example": "test@gmail.com"
+          },
+          "os": {
+            "type": "string",
+            "description": "Operating system",
+            "example": "android"
+          }
+        },
+        "required": [
+          "email",
+          "os"
+        ]
+      },
+      "ProviderStatusSummaryDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "Provider ID",
+            "example": "frejaid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "saved",
+              "requested",
+              "sent",
+              "ready",
+              "rejected"
+            ],
+            "description": "Internal status"
+          },
+          "displayStatus": {
+            "type": "string",
+            "enum": [
+              "not_requested",
+              "processing",
+              "ready",
+              "rejected"
+            ],
+            "description": "Display status for UI"
+          },
+          "credentials": {
+            "type": "object",
+            "description": "Test credentials if ready"
+          }
+        },
+        "required": [
+          "providerId",
+          "status",
+          "displayStatus"
+        ]
+      },
+      "TesterResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Tester ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Tester name"
+          },
+          "testDevices": {
+            "description": "Test devices with email and OS",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestDeviceResponseDto"
+            }
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "hasPhoto": {
+            "type": "boolean",
+            "description": "Whether tester has a photo uploaded"
+          },
+          "photoBase64": {
+            "type": "string",
+            "description": "Base64 encoded photo"
+          },
+          "photoMimeType": {
+            "type": "string",
+            "description": "Photo MIME type"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update timestamp"
+          },
+          "providerStatuses": {
+            "description": "Provider statuses",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProviderStatusSummaryDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "testDevices",
+          "hasPhoto",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "TesterListResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TesterResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total count"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit used in query"
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset used in query"
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "limit",
+          "offset"
+        ]
+      },
+      "TestDeviceDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Test email for the device",
+            "example": "test@gmail.com"
+          },
+          "os": {
+            "type": "string",
+            "description": "Operating system (e.g., android, ios)",
+            "example": "android"
+          }
+        },
+        "required": [
+          "email",
+          "os"
+        ]
+      },
+      "CreateTesterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Tester name",
+            "example": "John Doe"
+          },
+          "testDevices": {
+            "description": "Test devices with email and OS",
+            "example": [
+              {
+                "email": "test@gmail.com",
+                "os": "android"
+              },
+              {
+                "email": "test@icloud.com",
+                "os": "ios"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestDeviceDto"
+            }
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number in E.164 format",
+            "example": "+821012345678"
+          },
+          "photoBase64": {
+            "type": "string",
+            "description": "Base64 encoded photo with data URI prefix"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          },
+          "autoRequest": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, immediately request test credentials after saving"
+          },
+          "providerIds": {
+            "description": "Provider IDs to request test credentials for",
+            "example": [
+              "frejaid",
+              "cmd"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "consent": {
+            "type": "boolean",
+            "description": "User consent for data processing",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "consent"
+        ]
+      },
+      "TesterDetailResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Tester ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Tester name"
+          },
+          "testDevices": {
+            "description": "Test devices with email and OS",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestDeviceResponseDto"
+            }
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "hasPhoto": {
+            "type": "boolean",
+            "description": "Whether tester has a photo uploaded"
+          },
+          "photoBase64": {
+            "type": "string",
+            "description": "Base64 encoded photo"
+          },
+          "photoMimeType": {
+            "type": "string",
+            "description": "Photo MIME type"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update timestamp"
+          },
+          "providerStatuses": {
+            "description": "Provider statuses",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProviderStatusSummaryDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "testDevices",
+          "hasPhoto",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateTesterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Tester name"
+          },
+          "testDevices": {
+            "description": "Test devices with email and OS (replaces entire array)",
+            "example": [
+              {
+                "email": "test@gmail.com",
+                "os": "android"
+              },
+              {
+                "email": "test@icloud.com",
+                "os": "ios"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestDeviceDto"
+            }
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number in E.164 format"
+          },
+          "photoBase64": {
+            "type": "string",
+            "description": "Base64 encoded photo with data URI prefix"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          }
+        }
+      },
+      "RequestTestCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "providerIds": {
+            "description": "Provider IDs to request test credentials for",
+            "example": [
+              "frejaid",
+              "cmd"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "providerIds"
+        ]
+      },
+      "CompanyInfoResponseDto": {
+        "type": "object",
+        "properties": {
+          "legalCompanyName": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string"
+          },
+          "registrationNumber": {
+            "type": "string"
+          },
+          "registeredAddress": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
+          },
+          "serviceDescription": {
+            "type": "string"
+          },
+          "websiteUrl": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "object"
+          },
+          "providerRequirements": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "CompanyInfoContactDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Contact email"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone number"
+          }
+        }
+      },
+      "ProviderRequirementDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "Provider ID (e.g. \"bankid-no\", \"cmd\")"
+          },
+          "requirements": {
+            "type": "object",
+            "description": "Provider-specific requirements"
+          }
+        },
+        "required": [
+          "providerId",
+          "requirements"
+        ]
+      },
+      "CreateCompanyInfoDto": {
+        "type": "object",
+        "properties": {
+          "legalCompanyName": {
+            "type": "string",
+            "description": "Legal company name"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Display name"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Company / service logo URL"
+          },
+          "registrationNumber": {
+            "type": "string",
+            "description": "Company registration number"
+          },
+          "registeredAddress": {
+            "type": "string",
+            "description": "Registered address"
+          },
+          "vatNumber": {
+            "type": "string",
+            "description": "VAT number"
+          },
+          "serviceDescription": {
+            "type": "string",
+            "description": "Service description"
+          },
+          "websiteUrl": {
+            "type": "string",
+            "description": "Website URL"
+          },
+          "contact": {
+            "description": "Contact details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CompanyInfoContactDto"
+              }
+            ]
+          },
+          "providerRequirements": {
+            "description": "Per-provider requirements",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProviderRequirementDto"
+            }
+          }
+        }
+      },
+      "UpdateCompanyInfoBodyDto": {
+        "type": "object",
+        "properties": {
+          "legalCompanyName": {
+            "type": "string",
+            "description": "Legal company name"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Display name"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Company / service logo URL"
+          },
+          "registrationNumber": {
+            "type": "string",
+            "description": "Company registration number"
+          },
+          "registeredAddress": {
+            "type": "string",
+            "description": "Registered address"
+          },
+          "vatNumber": {
+            "type": "string",
+            "description": "VAT number"
+          },
+          "serviceDescription": {
+            "type": "string",
+            "description": "Service description"
+          },
+          "websiteUrl": {
+            "type": "string",
+            "description": "Website URL"
+          },
+          "contact": {
+            "description": "Contact details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CompanyInfoContactDto"
+              }
+            ]
+          },
+          "providerRequirements": {
+            "description": "Per-provider requirements",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProviderRequirementDto"
+            }
+          }
+        }
+      },
+      "ContractResponseDto": {
+        "type": "object",
+        "properties": {
+          "contractId": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "documentType": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "number"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "uploadedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "contractId",
+          "providerId",
+          "fileName",
+          "fileSize",
+          "contentType",
+          "uploadedAt",
+          "state"
+        ]
+      },
+      "CreateActivationFormDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "Provider ID to request activation for"
+          },
+          "data": {
+            "type": "object",
+            "description": "Form data as key-value pairs",
+            "example": {
+              "legalCompanyName": "Acme Corp",
+              "registrationNumber": "12345678"
+            }
+          },
+          "saveToCompanyInfo": {
+            "type": "boolean",
+            "description": "If true, also persist matching fields to app companyInfo",
+            "default": false
+          }
+        },
+        "required": [
+          "providerId",
+          "data"
+        ]
+      },
+      "IdWalletDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the ID wallet",
+            "example": "google-wallet"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the ID wallet",
+            "example": "Google Wallet"
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "URL to the ID wallet's logo",
+            "example": "https://static.hopae.com/images/wallets/google-wallet.png"
+          },
+          "type": {
+            "type": "number",
+            "description": "Digital ID Type: 1 (Centralized IdP App), 2 (Chip-based Reader), 3 (Decentralized Wallet)",
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "example": 3
+          },
+          "countries": {
+            "description": "List of supported countries (ISO 3166-1 alpha-2 country codes)",
+            "example": [
+              "us",
+              "kr"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the ID wallet",
+            "example": "Google Wallet is a mobile wallet application"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether this ID wallet is enabled for the app (only included in Console APIs)",
+            "example": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "logoUrl",
+          "type",
+          "countries"
+        ]
+      },
+      "UpcomingEnvInfoDto": {
+        "type": "object",
+        "properties": {
+          "releaseDate": {
+            "type": "string",
+            "description": "Expected release date (Year/Quarter or Year/Month format)",
+            "example": "2026/Q1"
+          }
+        },
+        "required": [
+          "releaseDate"
+        ]
+      },
+      "UpcomingInfoDto": {
+        "type": "object",
+        "properties": {
+          "production": {
+            "$ref": "#/components/schemas/UpcomingEnvInfoDto"
+          },
+          "sandbox": {
+            "$ref": "#/components/schemas/UpcomingEnvInfoDto"
+          },
+          "dev": {
+            "$ref": "#/components/schemas/UpcomingEnvInfoDto"
+          }
+        }
+      },
+      "ProviderDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the provider"
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "URL of the provider logo"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the provider"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the provider"
+          },
+          "countries": {
+            "description": "List of supported countries",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the provider is active",
+            "default": false
+          },
+          "needAction": {
+            "type": "boolean",
+            "description": "Whether the provider needs additional action/configuration",
+            "default": false
+          },
+          "flowTypes": {
+            "type": "array",
+            "description": "Supported verification flow types",
+            "example": [
+              "redirect",
+              "qr"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "push",
+                "qr",
+                "redirect",
+                "dc"
+              ]
+            }
+          },
+          "scopes": {
+            "description": "List of available scopes for this provider",
+            "example": [
+              "openid",
+              "profile",
+              "email"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "loa": {
+            "description": "Level of Assurance (LoA) values supported by this provider",
+            "example": [
+              3,
+              4
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "defaultLoa": {
+            "type": "number",
+            "description": "Default LoA assigned to this provider when IDP does not return one (0 = unspecified)",
+            "example": 3
+          },
+          "type": {
+            "type": "number",
+            "description": "Digital ID Type: 1 (Centralized IdP), 2 (Chip-based), 3 (Decentralized Wallet)",
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "example": 3
+          },
+          "supportedIdWallets": {
+            "description": "Supported ID wallets (only included in Console APIs with app context)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdWalletDto"
+            }
+          },
+          "supportedEnvironments": {
+            "type": "array",
+            "description": "Environments where this provider is available (empty if unknown)",
+            "example": [
+              "sandbox",
+              "production"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "production",
+                "sandbox",
+                "development"
+              ]
+            }
+          },
+          "upcomingInfo": {
+            "description": "Environment-specific upcoming status and release dates",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UpcomingInfoDto"
+              }
+            ]
+          },
+          "displayStatus": {
+            "type": "string",
+            "description": "Display status override for UI (e.g., need_contract, processing_contract)"
+          },
+          "displayMessage": {
+            "type": "string",
+            "description": "Message to show on hover when displayStatus is set"
+          }
+        },
+        "required": [
+          "id",
+          "logoUrl",
+          "name",
+          "countries",
+          "isActive",
+          "needAction",
+          "flowTypes",
+          "scopes"
+        ]
+      },
+      "UserDataOptionDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Option value to be used in userData",
+            "example": "ABNANL2A"
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable label for the option",
+            "example": "ABN AMRO"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ]
+      },
+      "UserDataFieldDto": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Field name in userData object",
+            "example": "presetBank"
+          },
+          "type": {
+            "type": "string",
+            "description": "Field type",
+            "enum": [
+              "text",
+              "select"
+            ],
+            "example": "select"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether this field is required",
+            "example": true
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable label",
+            "example": "Bank Selection"
+          },
+          "description": {
+            "type": "string",
+            "description": "Field description/help text",
+            "example": "Select your Dutch bank for iDIN verification"
+          },
+          "options": {
+            "description": "Available options for select-type fields",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDataOptionDto"
+            }
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Validation pattern (regex) for text-type fields",
+            "example": "^[A-Z]{2}[0-9]{9}$"
+          }
+        },
+        "required": [
+          "field",
+          "type",
+          "required",
+          "label"
+        ]
+      },
+      "ProviderConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "Provider identifier",
+            "example": "idin"
+          },
+          "requiredUserData": {
+            "description": "Required userData fields for this provider",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDataFieldDto"
+            }
+          },
+          "optionalUserData": {
+            "description": "Optional userData fields for this provider",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDataFieldDto"
+            }
+          },
+          "flowTypes": {
+            "description": "Supported verification flow types",
+            "example": [
+              "redirect"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lastUpdated": {
+            "type": "string",
+            "description": "ISO timestamp when configuration was last updated",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        },
+        "required": [
+          "providerId",
+          "requiredUserData",
+          "flowTypes"
+        ]
+      },
+      "UpcomingProviderDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the provider"
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "URL of the provider logo"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the provider"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the provider"
+          },
+          "countries": {
+            "description": "List of supported countries",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "flowTypes": {
+            "type": "array",
+            "description": "Supported verification flow types",
+            "example": [
+              "redirect",
+              "qr"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "push",
+                "qr",
+                "redirect",
+                "dc"
+              ]
+            }
+          },
+          "scopes": {
+            "description": "List of available scopes for this provider",
+            "example": [
+              "openid",
+              "profile",
+              "email"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "loa": {
+            "description": "Level of Assurance (LoA) values supported by this provider",
+            "example": [
+              3,
+              4
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "defaultLoa": {
+            "type": "number",
+            "description": "Default LoA assigned to this provider when IDP does not return one (0 = unspecified)",
+            "example": 3
+          },
+          "requested": {
+            "type": "boolean",
+            "description": "Whether this provider has been requested by the client",
+            "default": false
+          },
+          "type": {
+            "type": "number",
+            "description": "Digital ID Type: 1 (Centralized IdP), 2 (Chip-based), 3 (Decentralized Wallet)",
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "example": 3
+          },
+          "supportedEnvironments": {
+            "type": "array",
+            "description": "Environments where this provider is available (empty if unknown)",
+            "example": [],
+            "items": {
+              "type": "string",
+              "enum": [
+                "production",
+                "sandbox",
+                "development"
+              ]
+            }
+          },
+          "upcomingInfo": {
+            "description": "Environment-specific upcoming status and release dates",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UpcomingInfoDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "logoUrl",
+          "name",
+          "countries",
+          "flowTypes",
+          "scopes",
+          "requested"
+        ]
+      },
+      "BulkUpdateProvidersDto": {
+        "type": "object",
+        "properties": {
+          "providers": {
+            "type": "object",
+            "description": "Map of provider ID to update settings. Max 50 entries. Each value: { enabled?: boolean, config?: object }.",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable or disable the provider"
+                },
+                "config": {
+                  "type": "object",
+                  "description": "Provider-specific configuration"
+                }
+              }
+            },
+            "example": {
+              "bankidse": {
+                "enabled": true,
+                "config": {}
+              },
+              "frejaid": {
+                "enabled": false
+              }
+            }
+          }
+        },
+        "required": [
+          "providers"
+        ]
+      },
+      "UpdateProviderDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "config": {
+            "type": "object",
+            "description": "Provider-specific configuration (plain object, max depth 5)"
+          }
+        }
+      },
+      "CreateBillingCustomerDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "VerificationMeterDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Client ID (App ID)"
+          },
+          "verificationTransactionId": {
+            "type": "string",
+            "description": "Verification Transaction ID"
+          }
+        },
+        "required": [
+          "organizationId",
+          "clientId",
+          "verificationTransactionId"
+        ]
+      },
+      "CreateVerificationRequest": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "The identifier for the desired eID provider.",
+            "example": "bankidse"
+          },
+          "redirectUri": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to redirect to after a redirect-based verification."
+          },
+          "webhookUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to receive asynchronous status updates."
+          },
+          "userData": {
+            "type": "object",
+            "description": "User information required by certain eID providers.",
+            "example": {
+              "email": "user@example.com"
+            }
+          }
+        },
+        "required": [
+          "providerId"
+        ]
+      },
+      "CreateVerificationResponse": {
+        "type": "object",
+        "properties": {
+          "verificationId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "initiated",
+              "pending"
+            ]
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "flowType": {
+            "type": "string",
+            "enum": [
+              "qr",
+              "redirect",
+              "push"
+            ]
+          },
+          "flowDetails": {
+            "type": "object",
+            "properties": {
+              "qrData": {
+                "type": "string",
+                "description": "Base64 data for QR code generation."
+              },
+              "authorizationUrl": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL for browser redirection."
+              }
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GetVerificationResponse": {
+        "type": "object",
+        "properties": {
+          "verificationId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "authorizationCode": {
+            "type": "string",
+            "description": "Appears when status is 'completed'."
+          },
+          "verifiedAttributes": {
+            "type": "object",
+            "description": "Contains user's verified data upon completion."
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "verifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TokenRequest": {
+        "type": "object",
+        "properties": {
+          "grant_type": {
+            "type": "string",
+            "enum": [
+              "authorization_code"
+            ],
+            "description": "Must be 'authorization_code'."
+          },
+          "code": {
+            "type": "string",
+            "description": "The authorization code received after a successful verification."
+          },
+          "client_id": {
+            "type": "string",
+            "description": "Your application's Client ID."
+          },
+          "client_secret": {
+            "type": "string",
+            "description": "Your application's Client Secret. Required for confidential clients."
+          }
+        },
+        "required": [
+          "grant_type",
+          "code",
+          "client_id"
+        ]
+      }
+    }
+  }
+}

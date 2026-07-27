@@ -1,0 +1,45 @@
+generated: '2026-07-19'
+method: searched
+source: >-
+  https://www.hopae.com/products/connect + https://www.hopae.com/ +
+  https://trust.hopae.com + docs.hopae.com + OpenAPI/OIDC discovery
+standards:
+  - id: oidc
+    conforms: true
+    evidence: >-
+      Hopae Connect is officially OpenID Connect certified (changelog 2025-10-10); OIDC OP
+      surface publishes /.well-known/openid-configuration at connect.hopae.com.
+  - id: oauth2
+    conforms: true
+    evidence: OIDC Authorization Code + refresh_token flows; /.well-known/oauth-authorization-server present.
+  - id: rfc7807-problem-details
+    conforms: true
+    evidence: Error responses follow RFC 7807 Problem Details (title/status/detail/instance).
+  - id: eidas-2.0
+    conforms: true
+    evidence: hConnect and the Hopae Wallet SDK are marketed as eIDAS 2.0-compliant; participation in EU Large Scale Pilot (WeBuild).
+  - id: sd-jwt
+    conforms: true
+    evidence: Hopae authored the SD-JWT / SD-JWT-VC reference implementation (now OpenWallet Foundation).
+  - id: mdl-iso18013
+    conforms: true
+    evidence: Supports mDL (mobile driver's license) credentials per product docs.
+  - id: w3c-verifiable-credentials
+    conforms: true
+    evidence: Open-source W3C DID/VC digital wallet (npm 'hopae'); W3C Digital Credentials API native integration.
+  - id: soc2
+    conforms: true
+    evidence: SOC 2 compliance posture published (homepage + trust center).
+  - id: iso-27001
+    conforms: true
+    evidence: ISO 27001 cited in hConnect compliance posture.
+  - id: gdpr
+    conforms: true
+    evidence: GDPR-ready compliance posture published (homepage + trust center).
+compliance_program:
+  published: true
+  url: https://trust.hopae.com
+  certifications: [SOC 2, ISO 27001, GDPR, eIDAS 2.0]
+  note: >-
+    Certifications are drawn from Hopae's published trust center and product/marketing
+    compliance claims; treat as provider-stated posture rather than independently verified audit reports.

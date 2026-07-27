@@ -1,0 +1,13 @@
+generated: '2026-07-19'
+method: searched
+probe: true
+url: https://trust.hopae.com
+certifications: [SOC 2, ISO 27001, GDPR, eIDAS 2.0]
+evidence:
+  - {source: https://trust.hopae.com, kind: trust-center, note: "Page titled 'Hopae S.A. Trust Center' (certification detail rendered client-side)"}
+  - {source: https://www.hopae.com/, kind: marketing, keywords: [SOC2, GDPR-ready]}
+  - {source: https://www.hopae.com/products/connect, kind: product, keywords: [eIDAS 2.0, ISO 27001, SOC 2, GDPR]}
+note: >-
+  trust.hopae.com resolves (HTTP 200) and is a dedicated trust center. Named certifications
+  are taken from Hopae's published compliance posture on the trust center and product pages;
+  they are provider-stated and not independently verified here.

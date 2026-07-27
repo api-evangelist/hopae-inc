@@ -1,0 +1,12 @@
+generated: '2026-07-19'
+method: generated
+source: openapi/hopae-inc-hconnect-openapi-original.json + docs.hopae.com
+skills:
+  - file: hopae-inc-verify-identity.md
+    name: Verify a user's identity with a global eID
+    api: openapi/hopae-inc-hconnect-openapi-original.json
+    operations: [getProviders, createVerification, getVerification, VerificationController_getVerificationUserinfo, VerificationController_getVerificationEvidence]
+  - file: hopae-inc-onboard-app.md
+    name: Create an App, activate providers, and wire webhooks
+    api: openapi/hopae-inc-hconnect-openapi-original.json
+    operations: [WorkspaceAppsController_createApp, WorkspaceAppsController_listProviders, WorkspaceActivationController_enableProvider, WorkspaceWorkflowController_createWorkflow, WorkspaceWorkflowController_setDefault, WorkspaceAppsController_updateWebhookConfig, WorkspaceAppsController_rotateWebhookSecret]

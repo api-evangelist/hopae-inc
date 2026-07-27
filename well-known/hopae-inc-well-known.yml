@@ -1,0 +1,42 @@
+generated: '2026-07-19'
+method: searched
+source: live probes of Hopae Connect OIDC + REST hosts
+hosts:
+  - https://sandbox.api.hopae.com
+  - https://api.hopae.com
+  - https://connect.hopae.com
+  - https://docs.hopae.com
+  - https://hopae.com
+documents:
+  - path: /.well-known/openid-configuration
+    host: https://sandbox.api.hopae.com
+    status: 200
+    file: hopae-inc-openid-configuration.json
+  - path: /.well-known/openid-configuration
+    host: https://api.hopae.com
+    status: 200
+    file: hopae-inc-openid-configuration-production.json
+  - path: /.well-known/openid-configuration
+    host: https://connect.hopae.com
+    status: 200
+    file: hopae-inc-openid-configuration-production.json
+    note: connect.hopae.com is the production OIDC issuer (same document saved as production)
+  - path: /.well-known/oauth-authorization-server
+    host: https://sandbox.api.hopae.com
+    status: 200
+    file: hopae-inc-oauth-authorization-server.json
+  - path: /.well-known/security.txt
+    host: https://hopae.com
+    status: 404
+  - path: /.well-known/security.txt
+    host: https://sandbox.api.hopae.com
+    status: 404
+  - path: /.well-known/security.txt
+    host: https://docs.hopae.com
+    status: 404
+  - path: /.well-known/api-catalog
+    host: https://hopae.com
+    status: 404
+  - path: /.well-known/openid-configuration
+    host: https://hopae.com
+    status: 404

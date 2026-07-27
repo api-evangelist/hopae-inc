@@ -1,0 +1,77 @@
+# hConnect
+
+## Docs
+
+- [Authentication](https://docs.hopae.com/api-reference/authentication.md): hConnect exposes two auth surfaces: Workspace API uses Bearer tokens; App-scoped endpoints use Basic auth. This guide explains which credentials to use and when.
+- [Error Code Reference](https://docs.hopae.com/api-reference/error-codes.md): Complete list of error codes and their meanings
+- [API Overview](https://docs.hopae.com/api-reference/introduction.md): High-level overview of hConnect’s two surfaces: OIDC OP endpoints and REST API, with separate base URLs, auth, and usage.
+- [Start Authorization](https://docs.hopae.com/api-reference/oidc/auth.md): Initiates the OIDC Authorization Code flow. Front‑channel redirect; no Authorization header.
+- [JWKS](https://docs.hopae.com/api-reference/oidc/jwks.md): Retrieve the JSON Web Key Set for verifying Hopae-issued ID tokens
+- [Exchange Code for Token](https://docs.hopae.com/api-reference/oidc/token.md)
+- [UserInfo](https://docs.hopae.com/api-reference/oidc/userinfo.md): Returns user claims based on granted scopes. Requires a valid Bearer access token.
+- [Discovery Document](https://docs.hopae.com/api-reference/oidc/well-known.md): Retrieve the OIDC discovery metadata for Hopae Connect
+- [Get Providers](https://docs.hopae.com/api-reference/providers/get-providers.md)
+- [Cancel Verification](https://docs.hopae.com/api-reference/verifications/cancel-verification.md)
+- [Create Verification](https://docs.hopae.com/api-reference/verifications/create-verification.md): Start a new identity verification session with a supported eID provider.
+- [Get Verification Status](https://docs.hopae.com/api-reference/verifications/get-verification.md): Retrieve the status and timing of a verification session. No personal attributes are returned
+- [Get Verification Evidence](https://docs.hopae.com/api-reference/verifications/get-verification-evidence.md): Returns the credential evidence object from provenance for a completed verification.
+- [Get Verification UserInfo](https://docs.hopae.com/api-reference/verifications/get-verification-userinfo.md): Return user claims and verification provenance for a completed verification.
+- [Provider userData Requirements](https://docs.hopae.com/api-reference/verifications/user-data-requirements.md): Reference matrix of userData fields required when you create a verification for each eID provider.
+- [Submit Activation](https://docs.hopae.com/api-reference/workspace/activation/submit-activation.md): Submit activation data for one or more providers in a single call.
+- [Batch Create Apps](https://docs.hopae.com/api-reference/workspace/batch-create-apps.md): Create multiple apps in a single request.
+- [Create App](https://docs.hopae.com/api-reference/workspace/create-app.md): Create a new app in the workspace.
+- [Create Production Test](https://docs.hopae.com/api-reference/workspace/create-production-test.md): Create a new production test challenge for an app.
+- [Create Workflow](https://docs.hopae.com/api-reference/workspace/create-workflow.md): Create a new workflow for an app.
+- [Delete App](https://docs.hopae.com/api-reference/workspace/delete-app.md): Delete an app by client_id.
+- [Delete Custom Domain](https://docs.hopae.com/api-reference/workspace/delete-custom-domain.md): Remove the custom domain from an app.
+- [Delete Workflow](https://docs.hopae.com/api-reference/workspace/delete-workflow.md): Delete a workflow.
+- [Errors](https://docs.hopae.com/api-reference/workspace/errors.md): Error envelope and error codes for Workspace API responses.
+- [Get App](https://docs.hopae.com/api-reference/workspace/get-app.md): Retrieve a single app by client_id.
+- [Get Custom Domain](https://docs.hopae.com/api-reference/workspace/get-custom-domain.md): Read the current custom domain state for an app.
+- [Get Production Test Report](https://docs.hopae.com/api-reference/workspace/get-production-test-report.md): Get a production test challenge report with per-provider participation statistics.
+- [Get Providers](https://docs.hopae.com/api-reference/workspace/get-providers.md): List every provider available to an app, optionally including activation state.
+- [Get Redirect URIs](https://docs.hopae.com/api-reference/workspace/get-redirect-uris.md): Retrieve the redirect URIs configured for an app.
+- [Get Webhook Config](https://docs.hopae.com/api-reference/workspace/get-webhook-config.md): Retrieve webhook configuration for an app.
+- [Get Workflow](https://docs.hopae.com/api-reference/workspace/get-workflow.md): Retrieve a single workflow by ID.
+- [Get Workspace](https://docs.hopae.com/api-reference/workspace/get-workspace.md): Retrieve workspace metadata for the current environment.
+- [Introduction](https://docs.hopae.com/api-reference/workspace/introduction.md): Authenticate with workspace API keys and call the workspace endpoints.
+- [Get Apps](https://docs.hopae.com/api-reference/workspace/list-apps.md): List apps in the workspace with offset pagination.
+- [Get Node Types](https://docs.hopae.com/api-reference/workspace/list-node-types.md): Get all available workflow node types with their fields.
+- [Get Production Tests](https://docs.hopae.com/api-reference/workspace/list-production-tests.md): Get all production test challenges for an app.
+- [Get Workflows](https://docs.hopae.com/api-reference/workspace/list-workflows.md): Get all workflows for an app.
+- [Pagination](https://docs.hopae.com/api-reference/workspace/pagination.md): Offset pagination parameters and list response shape.
+- [Rate Limit](https://docs.hopae.com/api-reference/workspace/rate-limit.md): Rate limiting behavior for Workspace API.
+- [Replace Redirect URIs](https://docs.hopae.com/api-reference/workspace/replace-redirect-uris.md): Replace the full redirect URI list for an app.
+- [Rotate Client Secret](https://docs.hopae.com/api-reference/workspace/rotate-client-secret.md): Generate a new clientSecret for an existing App.
+- [Rotate Webhook Secret](https://docs.hopae.com/api-reference/workspace/rotate-webhook-secret.md): Generate a new signing secret for webhook delivery.
+- [Set Default Workflow](https://docs.hopae.com/api-reference/workspace/set-default-workflow.md): Set a workflow as the app default.
+- [Update App](https://docs.hopae.com/api-reference/workspace/update-app.md): Partially update an app's configuration.
+- [Configure Custom Domain](https://docs.hopae.com/api-reference/workspace/update-custom-domain.md): Set the Web Frontend and OIDC Backend hosts for an app.
+- [Update Webhook Config](https://docs.hopae.com/api-reference/workspace/update-webhook-config.md): Update webhook delivery settings for an app.
+- [Update Workflow](https://docs.hopae.com/api-reference/workspace/update-workflow.md): Partially update a workflow.
+- [Verify Custom Domain](https://docs.hopae.com/api-reference/workspace/verify-custom-domain.md): Re-check DNS and SSL and advance the custom domain status.
+- [Workflow Conditions](https://docs.hopae.com/api-reference/workspace/workflow-conditions.md): Reference for writing conditions used in IF and EVALUATE nodes.
+- [API Based Integration Guide](https://docs.hopae.com/guides/api-integration.md): Direct API integration for complete control over your user verification experience
+- [Provider Activation](https://docs.hopae.com/guides/concepts/activations.md): What activation is, the states a provider moves through, and how Hopae helps you get providers ready.
+- [Level of Assurance (LoA)](https://docs.hopae.com/guides/concepts/assurance.md): How to request and validate authentication assurance levels.
+- [Custom Domain](https://docs.hopae.com/guides/concepts/custom-domain.md): Serve verification and OIDC from your own branded domain instead of the default Hopae URLs.
+- [Types of eID](https://docs.hopae.com/guides/concepts/digital-id-types.md): Overview of eID types supported by Hopae Connect: Centralized IdP, Chip-based, and Decentralized Wallet.
+- [Sandbox Environment](https://docs.hopae.com/guides/concepts/environments.md): Build in Sandbox, deploy in Production
+- [Normalized User Data](https://docs.hopae.com/guides/concepts/normalized-user-data.md): Flat, standard OIDC claims (plus LoA metadata) you can rely on across providers
+- [OpenID Connect (OIDC)](https://docs.hopae.com/guides/concepts/oidc-provider.md): What OIDC is, why it matters for you, recommended client libraries, and how Hopae Connect acts as an OpenID Provider (OP).
+- [Production Test](https://docs.hopae.com/guides/concepts/production-test.md): Validate your integration with real users and real credentials before going live
+- [Return Data Model](https://docs.hopae.com/guides/concepts/return-data-model.md): What we return after User Verification
+- [Test Guide](https://docs.hopae.com/guides/concepts/test-guide.md): Check each eID in seconds from the Hopae Console
+- [Verification Flow](https://docs.hopae.com/guides/concepts/verification-flow.md): Understanding the verification lifecycle and flow types in hConnect
+- [Provenance](https://docs.hopae.com/guides/data-types/provenance.md): Provenance shape and copy‑paste types for /userinfo responses.
+- [User](https://docs.hopae.com/guides/data-types/user.md): User object shape and copy‑paste types for OIDC/REST /userinfo responses.
+- [Digital Credentials (Native) Integration](https://docs.hopae.com/guides/dc-native-integration.md): Verify government-issued identity credentials from device wallets using the W3C Digital Credentials API
+- [Welcome](https://docs.hopae.com/guides/getting-started/introduction.md): Learn about hConnect and how to get started
+- [Quickstart with React](https://docs.hopae.com/guides/getting-started/quickstart.md): Get started with Hopae Connect in 1 minute
+- [Integration Methods](https://docs.hopae.com/guides/integration-methods.md): Choose the right integration approach for your use case
+- [OIDC Integration Guide](https://docs.hopae.com/guides/oidc-integration.md): Implement Hopae Connect using the standard OIDC Authorization Code flow
+- [Webhook Signature Verification](https://docs.hopae.com/guides/webhook-signing.md): Verify incoming webhook payloads using HMAC-SHA256 signatures.
+
+## OpenAPI Specs
+
+- [openapi](https://docs.hopae.com/openapi.json)

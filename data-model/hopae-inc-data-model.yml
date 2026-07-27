@@ -1,0 +1,52 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/hopae-inc-hconnect-openapi-original.json
+docs: https://docs.hopae.com/api-reference
+summary: >-
+  Entity-relationship graph derived from the hConnect OpenAPI. A Workspace owns Apps; each
+  App owns Workflows, a Webhook config, an optional Custom Domain, Production Tests, and a set
+  of activated Providers. Verifications are created under an App against a Provider and yield
+  UserInfo/Provenance. The Console manages workspace API keys.
+entities:
+  - name: Workspace
+    id_field: workspaceId
+    description: The Hopae Connect account; created on sign-up. Holds workspace API keys.
+  - name: App
+    id_field: clientId
+    description: A configured application with clientId/clientSecret credentials, redirect URIs, webhook config, and a default workflow.
+  - name: Provider
+    id_field: providerId
+    description: A government/bank/private eID provider that must be activated per App before use.
+  - name: Verification
+    id_field: verificationId
+    description: A single identity verification session against a chosen provider.
+  - name: Workflow
+    id_field: workflowId
+    description: A node-based verification workflow bound to an App.
+  - name: WebhookConfig
+    id_field: clientId (1:1 with App)
+    description: Webhook delivery settings and signing secret for an App.
+  - name: CustomDomain
+    id_field: clientId (1:1 with App)
+    description: Branded Web Frontend / OIDC Backend hosts for an App.
+  - name: ProductionTest
+    id_field: challengeId
+    description: A production test challenge validating an App's integration with real users.
+  - name: ApiKey
+    id_field: id
+    description: A workspace API key managed via the Console.
+  - name: Provenance
+    id_field: (embedded in Verification userinfo)
+    description: Credential evidence and claim provenance returned for a completed verification.
+relationships:
+  - {from: Workspace, type: has_many, to: App, via: clientId}
+  - {from: Workspace, type: has_many, to: ApiKey, via: id}
+  - {from: App, type: has_many, to: Workflow, via: workflowId}
+  - {from: App, type: has_one, to: WebhookConfig, via: clientId}
+  - {from: App, type: has_one, to: CustomDomain, via: clientId}
+  - {from: App, type: has_many, to: ProductionTest, via: challengeId}
+  - {from: App, type: has_many, to: Provider, via: providerId, note: through activation}
+  - {from: Verification, type: belongs_to, to: App, via: clientId}
+  - {from: Verification, type: belongs_to, to: Provider, via: providerId}
+  - {from: Verification, type: belongs_to, to: Workflow, via: workflowId}
+  - {from: Verification, type: has_one, to: Provenance, via: verificationId}

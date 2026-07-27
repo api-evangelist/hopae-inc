@@ -1,0 +1,223 @@
+generated: '2026-07-19'
+method: derived
+status: candidate
+source: openapi/hopae-inc-hconnect-openapi-original.json
+note: >-
+  No official hosted/remote Hopae MCP server was found (docs, npm @modelcontextprotocol,
+  MCP registries). This is a DERIVED candidate tool list — one tool per hConnect OpenAPI
+  operation — a starting point for an MCP server, not a published server.
+server:
+  name: hopae-hconnect
+  transport: http
+  url: null
+tools:
+  - name: getProviders
+    description: "Get Providers"
+    method: GET
+    path: /v1/providers
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#getProviders
+  - name: createVerification
+    description: "Create Verification"
+    method: POST
+    path: /v1/verifications
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#createVerification
+  - name: getVerification
+    description: "Get Verification Status"
+    method: GET
+    path: /v1/verifications/{verificationId}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#getVerification
+  - name: deleteVerification
+    description: "Cancel Verification"
+    method: DELETE
+    path: /v1/verifications/{verificationId}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#deleteVerification
+  - name: exchangeCodeForToken
+    description: "Exchange Code for Token"
+    method: POST
+    path: /token
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#exchangeCodeForToken
+  - name: WorkspaceController_getWorkspace
+    description: "Get workspace information"
+    method: GET
+    path: /v1/workspace
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceController_getWorkspace
+  - name: WorkspaceAppsController_createApp
+    description: "Create a new app"
+    method: POST
+    path: /v1/apps
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_createApp
+  - name: WorkspaceAppsController_listApps
+    description: "List all apps"
+    method: GET
+    path: /v1/apps
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_listApps
+  - name: WorkspaceAppsController_batchCreateApps
+    description: "Batch create apps"
+    method: POST
+    path: /v1/apps/batch
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_batchCreateApps
+  - name: WorkspaceAppsController_getRedirectUris
+    description: "Get redirect URIs"
+    method: GET
+    path: /v1/apps/{id}/redirect-uris
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_getRedirectUris
+  - name: WorkspaceAppsController_updateRedirectUris
+    description: "Update redirect URIs"
+    method: PUT
+    path: /v1/apps/{id}/redirect-uris
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_updateRedirectUris
+  - name: WorkspaceAppsController_getWebhookConfig
+    description: "Get webhook configuration"
+    method: GET
+    path: /v1/apps/{id}/webhook-config
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_getWebhookConfig
+  - name: WorkspaceAppsController_updateWebhookConfig
+    description: "Update webhook configuration"
+    method: PATCH
+    path: /v1/apps/{id}/webhook-config
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_updateWebhookConfig
+  - name: WorkspaceAppsController_rotateWebhookSecret
+    description: "Rotate webhook secret"
+    method: POST
+    path: /v1/apps/{id}/webhook-config/rotate-secret
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_rotateWebhookSecret
+  - name: WorkspaceAppsController_listProviders
+    description: "List activation summaries for all providers on an app"
+    method: GET
+    path: /v1/apps/{id}/providers
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_listProviders
+  - name: WorkspaceAppsController_getApp
+    description: "Get app details"
+    method: GET
+    path: /v1/apps/{id}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_getApp
+  - name: WorkspaceAppsController_patchApp
+    description: "Patch app"
+    method: PATCH
+    path: /v1/apps/{id}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_patchApp
+  - name: WorkspaceAppsController_deleteApp
+    description: "Delete app"
+    method: DELETE
+    path: /v1/apps/{id}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_deleteApp
+  - name: WorkspaceActivationController_getActivationSteps
+    description: "Get activation steps"
+    method: GET
+    path: /v1/apps/{id}/providers/{providerId}/activation/steps
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceActivationController_getActivationSteps
+  - name: WorkspaceActivationController_enableProvider
+    description: "Enable or disable provider"
+    method: PATCH
+    path: /v1/apps/{id}/providers/{providerId}/activation
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceActivationController_enableProvider
+  - name: WorkspaceActivationController_submitActivationForm
+    description: "Submit activation form"
+    method: POST
+    path: /v1/apps/{id}/providers/{providerId}/activation/form
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceActivationController_submitActivationForm
+  - name: WorkspaceActivationController_uploadDocuments
+    description: "Upload activation documents"
+    method: POST
+    path: /v1/apps/{id}/providers/{providerId}/activation/documents
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceActivationController_uploadDocuments
+  - name: WorkspaceActivationController_deleteDocument
+    description: "Delete an activation document"
+    method: DELETE
+    path: /v1/apps/{id}/providers/{providerId}/activation/documents/{documentId}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceActivationController_deleteDocument
+  - name: WorkspaceWorkflowController_getNodeTypes
+    description: "List available node types"
+    method: GET
+    path: /v1/apps/{id}/workflows/node-types
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceWorkflowController_getNodeTypes
+  - name: WorkspaceWorkflowController_createWorkflow
+    description: "Create a workflow"
+    method: POST
+    path: /v1/apps/{id}/workflows
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceWorkflowController_createWorkflow
+  - name: WorkspaceWorkflowController_listWorkflows
+    description: "List all workflows"
+    method: GET
+    path: /v1/apps/{id}/workflows
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceWorkflowController_listWorkflows
+  - name: WorkspaceWorkflowController_getWorkflow
+    description: "Get a workflow"
+    method: GET
+    path: /v1/apps/{id}/workflows/{workflowId}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceWorkflowController_getWorkflow
+  - name: WorkspaceWorkflowController_updateWorkflow
+    description: "Update a workflow"
+    method: PATCH
+    path: /v1/apps/{id}/workflows/{workflowId}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceWorkflowController_updateWorkflow
+  - name: WorkspaceWorkflowController_deleteWorkflow
+    description: "Delete a workflow"
+    method: DELETE
+    path: /v1/apps/{id}/workflows/{workflowId}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceWorkflowController_deleteWorkflow
+  - name: WorkspaceWorkflowController_setDefault
+    description: "Set a workflow as default"
+    method: POST
+    path: /v1/apps/{id}/workflows/{workflowId}/set-default
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceWorkflowController_setDefault
+  - name: WorkspaceProductionTestController_listChallenges
+    description: "List production test challenges"
+    method: GET
+    path: /v1/apps/{id}/production-tests
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceProductionTestController_listChallenges
+  - name: WorkspaceProductionTestController_createChallenge
+    description: "Create a production test challenge"
+    method: POST
+    path: /v1/apps/{id}/production-tests
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceProductionTestController_createChallenge
+  - name: WorkspaceProductionTestController_getChallengeReport
+    description: "Get challenge report"
+    method: GET
+    path: /v1/apps/{id}/production-tests/{challengeId}/report
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceProductionTestController_getChallengeReport
+  - name: ConsoleController_createApiKey
+    description: "Create workspace API key"
+    method: POST
+    path: /v1/console/api-keys
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#ConsoleController_createApiKey
+  - name: ConsoleController_listApiKeys
+    description: "List workspace API keys"
+    method: GET
+    path: /v1/console/api-keys
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#ConsoleController_listApiKeys
+  - name: ConsoleController_revokeApiKey
+    description: "Revoke API key"
+    method: POST
+    path: /v1/console/api-keys/{id}/revoke
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#ConsoleController_revokeApiKey
+  - name: ConsoleController_deleteApiKey
+    description: "Delete API key"
+    method: DELETE
+    path: /v1/console/api-keys/{id}
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#ConsoleController_deleteApiKey
+  - name: WorkspaceAppsController_rotateClientSecret
+    description: "Rotate client secret"
+    method: POST
+    path: /v1/apps/{id}/rotate-client-secret
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#WorkspaceAppsController_rotateClientSecret
+  - name: VerificationController_getVerificationEvidence
+    description: "Get evidence for a verification"
+    method: GET
+    path: /v1/verifications/{verificationId}/evidence
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#VerificationController_getVerificationEvidence
+  - name: VerificationController_getVerificationUserinfo
+    description: "Get userinfo for a verification"
+    method: GET
+    path: /v1/verifications/{verificationId}/userinfo
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#VerificationController_getVerificationUserinfo
+  - name: VerificationController_createDcRequest
+    description: "Create DC request for Digital Credentials flow"
+    method: POST
+    path: /v1/verifications/dc-request
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#VerificationController_createDcRequest
+  - name: ProvidersController_getProviderConfiguration
+    description: "Get provider configuration"
+    method: GET
+    path: /v1/providers/{providerId}/configuration
+    source_operation: openapi/hopae-inc-hconnect-openapi-original.json#ProvidersController_getProviderConfiguration

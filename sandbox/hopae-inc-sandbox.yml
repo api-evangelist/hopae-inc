@@ -1,0 +1,32 @@
+generated: '2026-07-19'
+method: searched
+source: >-
+  https://docs.hopae.com/guides/concepts/environments +
+  https://docs.hopae.com/api-reference/authentication +
+  https://docs.hopae.com/guides/concepts/test-guide
+summary: >-
+  hConnect provides a full Sandbox environment with test-only credentials. Sandbox and
+  Production share the same API structure and responses; only the credentials/key prefix
+  change. Real eIDs are NOT accepted in Sandbox — attempts with live credentials fail.
+test_vs_live:
+  separation: environment-specific API keys (same base API structure)
+  sandbox_base_url: https://sandbox.api.hopae.com/connect
+  workspace_key_prefix:
+    sandbox: sk_workspace_test_
+    production: sk_workspace_prod_
+  app_credentials: clientId + clientSecret returned once from POST /v1/apps (Basic auth)
+test_data:
+  eids: Simulated test data only; real eIDs are rejected in Sandbox.
+  console_test_guide: >-
+    The Hopae Console "Test Guide" lets you check each eID in seconds and preview provider
+    flows (In-Console Preview) without leaving the Console.
+  note: >-
+    Hopae does not publish static magic test identifiers (e.g. fixed test card / SSN values);
+    sandbox verification is exercised through provider simulation in the Console. No verbatim
+    test values are published to capture here.
+production_access:
+  requirement: Complete a solutioning call with the Hopae team; production credentials issued after review.
+  new_eid_rollout: New eIDs launch in Sandbox first, then are promoted to Production via release notes.
+docs:
+  environments: https://docs.hopae.com/guides/concepts/environments
+  production_test: https://docs.hopae.com/guides/concepts/production-test

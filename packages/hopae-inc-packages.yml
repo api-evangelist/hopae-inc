@@ -1,0 +1,52 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.npmjs.com/ registry search (scope:hopae, hdcx, sd-jwt) + github.com/hopae-official
+note: >-
+  Hopae's public libraries center on Verifiable Digital Credentials and wallets
+  (SD-JWT, W3C DID/VC, hDCX wallet SDK). The @sd-jwt/* packages were created by
+  Hopae and donated to the OpenWallet Foundation (marked official:false, community
+  stewardship). The hConnect REST API itself is integrated over standard OIDC
+  client libraries plus the React quickstart repo rather than a dedicated server SDK.
+packages:
+  - language: javascript
+    registry: npm
+    name: hopae
+    url: https://www.npmjs.com/package/hopae
+    version: 0.0.1
+    install: npm install hopae
+    repository: https://github.com/hopae-official/hopae
+    description: A Secure and Interoperable Open-Source Digital Wallet for W3C DID/VC
+    official: true
+  - language: javascript
+    registry: npm
+    name: "@hdcx/wallet-core"
+    url: https://www.npmjs.com/package/@hdcx/wallet-core
+    version: 0.2.1
+    install: npm install @hdcx/wallet-core
+    description: The Simplest Wallet SDK in Typescript (hDCX-js wallet SDK, referenced by hopae-official/hDCX-sample-wallet)
+    official: true
+  - language: javascript
+    registry: npm
+    name: "@hopae/sd-jwt"
+    url: https://www.npmjs.com/package/@hopae/sd-jwt
+    version: 2.0.1
+    install: npm install @hopae/sd-jwt
+    repository: https://github.com/openwallet-foundation-labs/sd-jwt-js
+    description: SD-JWT (Selective Disclosure JWT) draft 7 implementation in TypeScript
+    official: true
+  - language: javascript
+    registry: npm
+    name: "@sd-jwt/core"
+    url: https://www.npmjs.com/package/@sd-jwt/core
+    install: npm install @sd-jwt/core
+    repository: https://github.com/openwallet-foundation/sd-jwt-js
+    description: Framework-agnostic SD-JWT implementation; created by Hopae, now stewarded by the OpenWallet Foundation
+    official: false
+  - language: javascript
+    registry: npm
+    name: "@sd-jwt/sd-jwt-vc"
+    url: https://www.npmjs.com/package/@sd-jwt/sd-jwt-vc
+    install: npm install @sd-jwt/sd-jwt-vc
+    repository: https://github.com/openwallet-foundation/sd-jwt-js
+    description: SD-JWT-VC reference implementation of the IETF SD-JWT-VC spec; created by Hopae, now OpenWallet Foundation
+    official: false

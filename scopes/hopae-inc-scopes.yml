@@ -1,0 +1,40 @@
+generated: '2026-07-19'
+method: searched
+source: https://connect.hopae.com/.well-known/openid-configuration
+docs: https://docs.hopae.com/api-reference/oidc/well-known
+note: >-
+  The hConnect REST OpenAPI declares only HTTP basic + bearer security schemes (no
+  oauth2 block), but the OIDC OP surface (connect.hopae.com) publishes an OpenID
+  Connect discovery document that declares scopes_supported. These are the OIDC
+  request scopes used in the Authorization Code flow for browser-based sign-in.
+schemes:
+  - name: OpenID Connect (Hopae Connect OP)
+    type: openIdConnect
+    issuer: https://connect.hopae.com
+    authorization_endpoint: https://connect.hopae.com/auth
+    token_endpoint: https://connect.hopae.com/token
+    userinfo_endpoint: https://connect.hopae.com/userinfo
+    jwks_uri: https://connect.hopae.com/jwks
+    grant_types: [authorization_code, implicit, refresh_token]
+scopes:
+  - scope: openid
+    description: Required OIDC scope; requests an ID token for the authenticated subject.
+    flows: [authorizationCode]
+  - scope: hopae
+    description: Hopae-specific scope granting access to Hopae Connect verification claims and provenance.
+    flows: [authorizationCode]
+  - scope: idv
+    description: Identity verification scope; grants the normalized eID verification result and level of assurance.
+    flows: [authorizationCode]
+  - scope: profile
+    description: Standard OIDC profile claims (name, given_name, family_name, birthdate, gender, locale, etc.).
+    flows: [authorizationCode]
+  - scope: email
+    description: Standard OIDC email + email_verified claims.
+    flows: [authorizationCode]
+  - scope: phone
+    description: Standard OIDC phone_number + phone_number_verified claims.
+    flows: [authorizationCode]
+  - scope: address
+    description: Standard OIDC address claim.
+    flows: [authorizationCode]

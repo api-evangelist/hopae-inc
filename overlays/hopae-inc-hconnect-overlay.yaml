@@ -1,0 +1,36 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Hopae hConnect API
+  version: 1.0.0
+extends: openapi/hopae-inc-hconnect-openapi-original.json
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-enriched: '2026-07-19'
+      x-apievangelist-provider: hopae-inc
+      x-apievangelist-category: identity-verification
+      x-apievangelist-artifacts:
+        authentication: authentication/hopae-inc-authentication.yml
+        conventions: conventions/hopae-inc-conventions.yml
+        errors: errors/hopae-inc-problem-types.yml
+        scopes: scopes/hopae-inc-scopes.yml
+        webhooks: asyncapi/hopae-inc-hconnect-webhooks.yml
+        data_model: data-model/hopae-inc-data-model.yml
+  - target: $.info
+    update:
+      x-error-format: rfc7807
+      x-idempotency:
+        supported: true
+        header: Idempotency-Key
+        source: documented error codes IDEMPOTENCY_KEY_CONFLICT / IDEMPOTENCY_REQUEST_IN_PROGRESS
+      x-pagination:
+        style: offset
+        params: [limit, offset]
+      x-rate-limit:
+        status: 429
+        retry_header: Retry-After
+  - target: $.servers
+    update:
+      - url: https://sandbox.api.hopae.com/connect
+        description: Sandbox (test) environment
+        x-environment: sandbox

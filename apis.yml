@@ -1,25 +1,259 @@
 aid: hopae-inc
 name: Hopae, Inc.
-description: Hopae, Inc. is a company surfaced as a portfolio company of 500-global and added to the API
-  Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  Hopae, Inc. (Hopae S.A.) is a digital identity infrastructure company that connects
+  verification providers, regulated businesses, and trust service providers to 65+
+  government-backed electronic IDs (eIDs) worldwide through a single, compliant API.
+  Its flagship product, hConnect, is a unified global eID verification hub exposing an
+  OIDC OpenID Provider surface plus a REST API for provider discovery and the verification
+  lifecycle. Hopae also ships an accredited eIDAS 2.0 wallet SDK, authored the widely used
+  SD-JWT / SD-JWT-VC reference implementation (donated to the OpenWallet Foundation), and
+  builds around open standards including eIDAS 2.0, mDL, SD-JWT, and W3C Verifiable
+  Credentials. The platform is developer-first with sandbox and production environments,
+  HMAC-signed webhooks, and a published SOC 2 / ISO 27001 / GDPR compliance posture.
 url: https://raw.githubusercontent.com/api-evangelist/hopae-inc/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - 500-global
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: enriched
+x-tier-reason: enrichment-pipeline
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://framerusercontent.com/assets/JDrpQK9QXlyYCuykjUrR228U2M.svg
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-19'
 tags:
 - Company
-apis: []
+- Identity
+- Identity Verification
+- Digital Identity
+- eID
+- Verifiable Credentials
+- Authentication
+- OpenID Connect
+- eIDAS
+- KYC
+apis:
+- aid: hopae-inc:hopae-inc-console-api-keys-api
+  name: Hopae, Inc. Console - API Keys API
+  description: Workspace API key management (Console)
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Console - API Keys
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-console-api-keys-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-providers-api
+  name: Hopae, Inc. Providers API
+  description: eID provider discovery
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Providers
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-providers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-token-api
+  name: Hopae, Inc. Token API
+  description: OAuth 2.0 token exchange
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Token
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-token-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-verifications-api
+  name: Hopae, Inc. Verifications API
+  description: Identity verification sessions
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Verifications
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-verifications-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-workspace-api-activation-api
+  name: Hopae, Inc. Workspace API - Activation API
+  description: Provider activation per app
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Workspace API - Activation
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-workspace-api-activation-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-workspace-api-apps-api
+  name: Hopae, Inc. Workspace API - Apps API
+  description: App management
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Workspace API - Apps
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-workspace-api-apps-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-workspace-api-production-tests-api
+  name: Hopae, Inc. Workspace API - Production Tests API
+  description: Production test challenges
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Workspace API - Production Tests
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-workspace-api-production-tests-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-workspace-api-workflows-api
+  name: Hopae, Inc. Workspace API - Workflows API
+  description: Workflow configuration per app
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Workspace API - Workflows
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-workspace-api-workflows-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
+- aid: hopae-inc:hopae-inc-workspace-api-workspace-api
+  name: Hopae, Inc. Workspace API - Workspace API
+  description: Workspace information
+  humanURL: https://docs.hopae.com
+  baseURL: https://sandbox.api.hopae.com/connect
+  tags:
+  - Workspace API - Workspace
+  properties:
+  - type: OpenAPI
+    url: openapi/hopae-inc-workspace-api-workspace-api-openapi.yml
+  - type: Documentation
+    url: https://docs.hopae.com
+  - type: APIReference
+    url: https://docs.hopae.com/api-reference/introduction
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+# --- security / governance (probed + derived) ---
+- type: DomainSecurity
+  url: security/hopae-inc-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/hopae-inc-agentic-access.yml
+- type: TrustCenter
+  url: https://trust.hopae.com
+- type: Compliance
+  url: https://trust.hopae.com
+# --- auth / access model ---
+- type: Authentication
+  url: authentication/hopae-inc-authentication.yml
+- type: OAuthScopes
+  url: scopes/hopae-inc-scopes.yml
+# --- packages / SDKs ---
+- type: Packages
+  url: packages/hopae-inc-packages.yml
+- type: SDKs
+  url: packages/hopae-inc-packages.yml
+# --- discovery / agent surfaces ---
+- type: WellKnown
+  url: well-known/hopae-inc-well-known.yml
+- type: MCPServer
+  url: mcp/hopae-inc-mcp.yml
+- type: LLMsTxt
+  url: llms/hopae-inc-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+# --- runtime semantics ---
+- type: Conventions
+  url: conventions/hopae-inc-conventions.yml
+- type: Idempotency
+  url: conventions/hopae-inc-conventions.yml
+- type: ErrorCatalog
+  url: errors/hopae-inc-problem-types.yml
+- type: Conformance
+  url: conformance/hopae-inc-conformance.yml
+- type: Lifecycle
+  url: lifecycle/hopae-inc-lifecycle.yml
+- type: Sandbox
+  url: sandbox/hopae-inc-sandbox.yml
+- type: DataModel
+  url: data-model/hopae-inc-data-model.yml
+- type: RateLimits
+  url: https://docs.hopae.com/api-reference/workspace/rate-limit
+# --- events / webhooks ---
+- type: AsyncAPI
+  url: asyncapi/hopae-inc-hconnect-webhooks.yml
+- type: Webhooks
+  url: asyncapi/hopae-inc-hconnect-webhooks.yml
+# --- changelog ---
+- type: ChangeLog
+  url: changelog/hopae-inc-changelog.yml
+# --- developer + commercial link properties ---
+- type: DeveloperPortal
+  url: https://console.hopae.com
+- type: Documentation
+  url: https://docs.hopae.com
+- type: APIReference
+  url: https://docs.hopae.com/api-reference/introduction
+- type: GettingStarted
+  url: https://docs.hopae.com/guides/getting-started/quickstart
+- type: Support
+  url: mailto:dev@hopae.com
+- type: Blog
+  url: https://www.hopae.com/blog
+- type: GitHubOrganization
+  url: https://github.com/hopae-official
+- type: SignUp
+  url: https://console.hopae.com
+- type: PrivacyPolicy
+  url: https://www.hopae.com/legal/privacy-policy
 - type: Website
   url: https://hopae.com
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence

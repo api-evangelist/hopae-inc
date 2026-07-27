@@ -1,0 +1,34 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.hopae.com/changelog
+scheme: date-based (dated feature entries; API surface is v1)
+current_version: v1
+entries:
+  - date: '2025-11-27'
+    area: Workspace API
+    type: addition
+    highlight: Programmatic access to configuration — create/manage Applications and enable/manage eID providers via API.
+  - date: '2025-11-27'
+    area: Console
+    type: addition
+    highlight: In-Console Preview — test eID provider flows and switch providers instantly without leaving the Console.
+  - date: '2025-11-21'
+    area: Custom Domain
+    type: addition
+    highlight: Serve verification and OIDC from your own branded domain instead of default Hopae URLs.
+  - date: '2025-10-10'
+    area: OIDC
+    type: certification
+    highlight: Hopae Connect officially certified for OpenID Connect (OIDC).
+  - date: '2025-09-26'
+    area: Localization
+    type: addition
+    highlight: Six built-in UI languages (English, Français, Deutsch, Polski, Español, Italiano) with browser-based detection.
+  - date: '2025-09-18'
+    area: Analytics
+    type: addition
+    highlight: Analytics dashboard tracking conversion rates and verification duration.
+  - date: '2025-08-22'
+    area: Environments
+    type: addition
+    highlight: Separate Sandbox and Production environments introduced; Personalausweis (German ID) support added.

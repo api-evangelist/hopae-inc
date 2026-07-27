@@ -1,0 +1,65 @@
+generated: '2026-07-19'
+method: searched
+source: https://docs.hopae.com/api-reference/ (authentication, error-codes, pagination, rate-limit, webhook-signing)
+api: openapi/hopae-inc-hconnect-openapi-original.json
+summary: >-
+  Cross-cutting request/response semantics for the hConnect API. hConnect exposes
+  two surfaces with different auth (Workspace API = Bearer workspace key; App API =
+  Basic clientId:clientSecret), an RFC 7807 problem-details error envelope, offset
+  pagination, HMAC-signed webhooks, and a documented idempotency contract surfaced
+  through its error codes.
+authentication:
+  style: dual-surface
+  surfaces:
+    - name: Workspace API
+      scheme: http-bearer
+      header: "Authorization: Bearer sk_workspace_{test|prod}_..."
+      used_for: Managing Apps, Workflows, Providers, Activation, Production Tests, API Keys
+    - name: App API
+      scheme: http-basic
+      header: "Authorization: Basic base64(clientId:clientSecret)"
+      used_for: /verifications, /userinfo and other end-user-facing endpoints
+  ref: authentication/hopae-inc-authentication.yml
+idempotency:
+  supported: true
+  evidence: >-
+    The published error reference documents IDEMPOTENCY_KEY_CONFLICT (duplicate
+    request with a different payload) and IDEMPOTENCY_REQUEST_IN_PROGRESS (a matching
+    request is still processing), both in the non-retryable error set — confirming an
+    idempotency-key mechanism guards mutating requests.
+  header: Idempotency-Key
+  conflict_error: IDEMPOTENCY_KEY_CONFLICT
+  in_progress_error: IDEMPOTENCY_REQUEST_IN_PROGRESS
+  docs: https://docs.hopae.com/api-reference/error-codes
+pagination:
+  style: offset
+  params:
+    limit: {default: 20, max: 100}
+    offset: {default: 0}
+  response_fields: [data, total, limit, offset]
+  docs: https://docs.hopae.com/api-reference/workspace/pagination
+error_envelope:
+  format: rfc7807
+  media_type: application/problem+json
+  fields: [title, status, detail, instance, timestamp, context, doc_url]
+  code_scheme: CATEGORY_ERROR_NAME (AUTH_*, VALIDATION_*, SESSION_*, PROVIDER_*, SYSTEM_*, RESOURCE_*)
+  ref: errors/hopae-inc-problem-types.yml
+  docs: https://docs.hopae.com/api-reference/error-codes
+rate_limiting:
+  signal: 429 Too Many Requests
+  retry_header: Retry-After
+  docs: https://docs.hopae.com/api-reference/workspace/rate-limit
+versioning:
+  style: uri-path
+  current: v1
+  base_paths:
+    rest: https://sandbox.api.hopae.com/connect (sandbox) / connect base (production)
+    oidc: https://connect.hopae.com
+  ref: lifecycle/hopae-inc-lifecycle.yml
+webhooks:
+  signing: HMAC-SHA256
+  signature_header: X-Hopae-Signature
+  signature_format: "t=<unix-timestamp>,v1=<hex-hmac-sha256>"
+  replay_window_seconds: 300
+  ref: asyncapi/hopae-inc-hconnect-webhooks.yml
+  docs: https://docs.hopae.com/guides/webhook-signing

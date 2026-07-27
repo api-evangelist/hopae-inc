@@ -1,0 +1,30 @@
+generated: '2026-07-19'
+method: searched
+source: https://docs.hopae.com/guides/concepts/environments + https://www.hopae.com/changelog
+versioning:
+  scheme: uri-path
+  current: v1
+  docs: https://docs.hopae.com/api-reference/introduction
+environments:
+  - name: sandbox
+    base_url: https://sandbox.api.hopae.com/connect
+    key_prefix: sk_workspace_test_
+    data: simulated test data
+  - name: production
+    base_url: connect base (issued after solutioning call)
+    key_prefix: sk_workspace_prod_
+    data: real eID data
+    access: requires solutioning call + approval
+release_notes: https://www.hopae.com/changelog
+deprecation:
+  policy_url: null
+  sunset_header: false
+  note: >-
+    No formal deprecation/Sunset (RFC 8594) policy is published. New eIDs are launched
+    in Sandbox first and promoted to Production, announced via the changelog/release notes.
+sla:
+  url: null
+  uptime_target: null
+status_page: null
+status_page_note: No public status page found (status.hopae.com did not resolve at probe time).
+deprecated_operations: []

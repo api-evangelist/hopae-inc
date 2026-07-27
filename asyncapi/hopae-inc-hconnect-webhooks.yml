@@ -1,0 +1,95 @@
+# generated: '2026-07-19'
+# method: searched
+# source: https://docs.hopae.com/guides/webhook-signing
+# spec_type: AsyncAPI
+asyncapi: 3.0.0
+info:
+  title: Hopae hConnect Webhooks
+  version: v1
+  description: >-
+    Outgoing webhook deliveries from Hopae Connect for the identity verification
+    lifecycle. Every delivery is signed with an HMAC-SHA256 signature in the
+    X-Hopae-Signature header (format `t=<unix-ts>,v1=<hex-hmac-sha256>`); reject
+    deliveries where |now - t| > 300s to prevent replay. Subscribe to event types
+    via the `events` array on PATCH /apps/{clientId}/webhook-config.
+  externalDocs:
+    url: https://docs.hopae.com/guides/webhook-signing
+servers:
+  subscriber:
+    host: your-app.example.com
+    protocol: https
+    description: The integrator's HTTPS endpoint registered in the App webhook config.
+channels:
+  verificationEvents:
+    address: /webhooks/hopae
+    description: Receives all subscribed verification lifecycle events.
+    messages:
+      verificationEvent:
+        $ref: '#/components/messages/VerificationEvent'
+operations:
+  receiveVerificationEvent:
+    action: receive
+    channel:
+      $ref: '#/channels/verificationEvents'
+    summary: Handle a signed verification lifecycle webhook.
+    security:
+      - $ref: '#/components/securitySchemes/hmacSignature'
+components:
+  securitySchemes:
+    hmacSignature:
+      type: httpApiKey
+      in: header
+      name: X-Hopae-Signature
+      description: HMAC-SHA256 signature over `<t>.<raw-body>`; format `t=<unix-ts>,v1=<hex>`.
+  messages:
+    VerificationEvent:
+      name: VerificationEvent
+      title: Verification lifecycle event
+      contentType: application/json
+      payload:
+        type: object
+        required: [event, eventId, timestamp, apiVersion, clientId, data]
+        properties:
+          event:
+            type: string
+            description: The event type.
+            enum:
+              - verification.created
+              - verification.requested
+              - verification.workflow.started
+              - verification.user.authentication_started
+              - verification.user.authentication_succeeded
+              - verification.user.authentication_failed
+              - verification.completed
+              - verification.failed
+              - verification.workflow.cancelled
+              - verification.session.timed_out
+          eventId: {type: string, example: evt_xxxx}
+          timestamp: {type: string, format: date-time}
+          apiVersion: {type: string, example: v1}
+          clientId: {type: string, example: FK5b0KSM}
+          data:
+            type: object
+            properties:
+              verificationId: {type: string}
+              status: {type: string}
+              providerId: {type: string}
+              workflowId: {type: string}
+              sessionExpiresAt: {type: string, format: date-time}
+              deviceType: {type: string}
+              countryCode: {type: string}
+              countryName: {type: string}
+              result:
+                type: object
+                properties:
+                  loa: {type: string}
+                  amr: {type: array, items: {type: string}}
+                  channel: {type: object}
+              event:
+                type: object
+                properties:
+                  type: {type: string}
+                  timestamp: {type: string, format: date-time}
+                  metadata: {type: object}
+              createdAt: {type: string, format: date-time}
+              updatedAt: {type: string, format: date-time}
