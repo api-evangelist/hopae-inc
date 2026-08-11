@@ -178,6 +178,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/hopae-inc-hconnect-overlay.yaml
 # --- security / governance (probed + derived) ---
 - type: DomainSecurity
   url: security/hopae-inc-domain-security.yml
