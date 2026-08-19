@@ -1,0 +1,160 @@
+{
+  "item": [
+    {
+      "id": "a7818ada-5099-4b2d-8907-4cf323c78d8a",
+      "name": "Workspace API - Workspace",
+      "description": {
+        "content": "Workspace information",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "6d3556f8-044d-429e-8618-54bc93b8aaaa",
+          "name": "Get workspace information",
+          "request": {
+            "name": "Get workspace information",
+            "description": {
+              "content": "Retrieve workspace details including app count",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "workspace"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "14ca92bf-ad87-4fb8-91fa-615d28c18979",
+              "name": "Workspace information",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "workspace"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"org_3C4Ysr9QkNkdbAZR5AD0uoLpgWl\",\n  \"apps_count\": 12,\n  \"createdAt\": \"2025-11-13T09:00:00.000Z\",\n  \"created_at\": 1731465600\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "35d9922e-3130-4bc0-874a-94d8813c8fd8",
+              "name": "Invalid API key",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "workspace"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://sandbox.api.hopae.com/connect",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "71e8911d-029b-44f6-8f0e-28a00a9c2f5b",
+    "name": "hConnect Console - API Keys Workspace API - Workspace API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.\n\nContact Support:\n Name: hConnect Support\n Email: dev@hopae.com",
+      "type": "text/plain"
+    }
+  }
+}

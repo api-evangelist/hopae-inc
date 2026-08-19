@@ -1,0 +1,80 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "hConnect Console - API Keys API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Console - API Keys",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List workspace API keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/console/api-keys"
+          },
+          "docs": "List all API keys for the workspace. Secrets are never returned."
+        },
+        {
+          "info": {
+            "name": "Create workspace API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://sandbox.api.hopae.com/connect/v1/console/api-keys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new API key for accessing workspace management APIs. The secret is only shown once."
+        },
+        {
+          "info": {
+            "name": "Revoke API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://sandbox.api.hopae.com/connect/v1/console/api-keys/:id/revoke",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Revoke an API key. Revoked keys can no longer be used to call workspace APIs."
+        },
+        {
+          "info": {
+            "name": "Delete API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://sandbox.api.hopae.com/connect/v1/console/api-keys/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete an API key. Deleted keys can no longer be used to call workspace APIs."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,926 @@
+{
+  "item": [
+    {
+      "id": "a6b6956f-5ab0-4a48-a3ee-e7275f92796b",
+      "name": "Verifications",
+      "description": {
+        "content": "Identity verification sessions",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "ea28691d-8c54-4a5a-925c-ce8d236dfe61",
+          "name": "Create Verification",
+          "request": {
+            "name": "Create Verification",
+            "description": {
+              "content": "Initiates a new identity verification session with the specified eID provider.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "verifications"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": \"<string>\",\n  \"redirectUri\": \"<uri>\",\n  \"webhookUrl\": \"<uri>\",\n  \"userData\": \"<object>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5886e197-915d-47e5-8700-dc0d77a8d92c",
+              "name": "Verification session created successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"providerId\": \"bankidse\",\n  \"redirectUri\": \"<uri>\",\n  \"webhookUrl\": \"<uri>\",\n  \"userData\": {\n    \"email\": \"user@example.com\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"verificationId\": \"string\",\n  \"status\": \"initiated\",\n  \"providerId\": \"string\",\n  \"flowType\": \"qr\",\n  \"flowDetails\": {\n    \"qrData\": \"string\",\n    \"authorizationUrl\": \"http://GKvcyUopzeNRjeVOhisHwA.xnqsDHDxRmos.EWxVgBcL8iQZrm9oxFo0LcQ8zLA.\"\n  },\n  \"expiresAt\": \"2025-08-15T04:32:01.914Z\",\n  \"createdAt\": \"1999-12-17T08:26:35.658Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ffcd66c1-ab0f-4da5-b3b9-462b21fc28a2",
+              "name": "Bad Request - Invalid parameters or eID not enabled.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"providerId\": \"bankidse\",\n  \"redirectUri\": \"<uri>\",\n  \"webhookUrl\": \"<uri>\",\n  \"userData\": {\n    \"email\": \"user@example.com\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4207b0a1-9988-4bb1-bebf-f86ca0bd1bb5",
+              "name": "Unauthorized - Invalid client credentials.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"providerId\": \"bankidse\",\n  \"redirectUri\": \"<uri>\",\n  \"webhookUrl\": \"<uri>\",\n  \"userData\": {\n    \"email\": \"user@example.com\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4e42d1fd-beca-46b7-b194-a32ad203bc98",
+          "name": "Get Verification Status",
+          "request": {
+            "name": "Get Verification Status",
+            "description": {
+              "content": "Retrieves the current status and result of a verification session.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "verifications",
+                ":verificationId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "verificationId",
+                  "description": "(Required) The unique identifier for the verification session."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "58c9cd25-5828-45aa-84e0-9daf6e6bfb23",
+              "name": "Verification status retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) The unique identifier for the verification session."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"verificationId\": \"string\",\n  \"status\": \"string\",\n  \"providerId\": \"string\",\n  \"authorizationCode\": \"string\",\n  \"verifiedAttributes\": {},\n  \"error\": {\n    \"code\": \"string\",\n    \"message\": \"string\"\n  },\n  \"expiresAt\": \"2015-12-31T03:58:18.118Z\",\n  \"verifiedAt\": \"1968-09-12T09:48:16.243Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "456b9f57-0286-45c8-9304-6fbb4ba4c77f",
+              "name": "Verification not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) The unique identifier for the verification session."
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c246703f-76ce-4255-902f-53bdd0d0e4a6",
+          "name": "Cancel Verification",
+          "request": {
+            "name": "Cancel Verification",
+            "description": {
+              "content": "Cancels and deletes an ongoing verification session.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "verifications",
+                ":verificationId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "verificationId",
+                  "description": "(Required) The unique identifier for the verification session."
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "49ba63aa-4595-496b-a6e5-18681394ae30",
+              "name": "Verification cancelled successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) The unique identifier for the verification session."
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "df08afe5-8153-44ff-a26b-7e697f91e36f",
+              "name": "Bad Request - Verification is already in a terminal state.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) The unique identifier for the verification session."
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "8519a4be-d68c-4479-810d-8bdb0e53399a",
+              "name": "Verification not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) The unique identifier for the verification session."
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ba9cfcef-e732-48ba-9dad-716d9519508e",
+          "name": "Get evidence for a verification",
+          "request": {
+            "name": "Get evidence for a verification",
+            "description": {
+              "content": "Returns the presentation-ready evidence object captured during verification (object format). If evidence is not available or verification is incomplete, appropriate errors are returned.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "verifications",
+                ":verificationId",
+                "evidence"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "verificationId",
+                  "description": "(Required) Unique verification identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "3032a917-9e38-4ac8-b6d4-32c8773d1d9c",
+              "name": "Evidence retrieved successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId",
+                    "evidence"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) Unique verification identifier"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "6c077bc6-6ecf-4335-8db0-199b26c93a53",
+              "name": "Verification is not completed or has no evidence",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId",
+                    "evidence"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) Unique verification identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "813c8567-4ffd-44d8-aa05-b71ad3476029",
+          "name": "Get userinfo for a verification",
+          "request": {
+            "name": "Get userinfo for a verification",
+            "description": {
+              "content": "Returns user information aligned with OIDC /userinfo output. Contains authentication context, user claims, provenance, and missing_claims.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "verifications",
+                ":verificationId",
+                "userinfo"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "verificationId",
+                  "description": "(Required) Unique verification identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "e61d1b55-6ee4-45c2-943b-696acd3f68bc",
+              "name": "Userinfo retrieved",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId",
+                    "userinfo"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) Unique verification identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"sub\": \"string\",\n  \"acr\": \"string\",\n  \"hopae_loa\": 9817.027257938642,\n  \"amr\": {},\n  \"missing_claims\": [\n    \"string\",\n    \"string\"\n  ],\n  \"user\": {},\n  \"provenance\": {\n    \"presentation\": {},\n    \"_metadata\": {}\n  },\n  \"provider_id\": \"string\",\n  \"verification_model\": \"disclosure\",\n  \"match\": {\n    \"matched\": false,\n    \"granularity\": \"aggregate\",\n    \"submitted_fields\": [\n      \"string\",\n      \"string\"\n    ],\n    \"details\": {\n      \"key_0\": {\n        \"matched\": false,\n        \"submitted_value\": \"string\",\n        \"similarity\": 7496.4165223435975\n      },\n      \"key_1\": {\n        \"matched\": false,\n        \"submitted_value\": \"string\",\n        \"similarity\": 3940.2169508637007\n      },\n      \"key_2\": {\n        \"matched\": true,\n        \"submitted_value\": \"string\",\n        \"similarity\": 207.75950604491\n      }\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "985e15f9-e936-4541-8964-fb84300edc99",
+              "name": "Verification is not completed",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    ":verificationId",
+                    "userinfo"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "verificationId",
+                      "description": "(Required) Unique verification identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "413efb53-8c2e-4bc2-a1d7-2819d11d8878",
+          "name": "Create DC request for Digital Credentials flow",
+          "request": {
+            "name": "Create DC request for Digital Credentials flow",
+            "description": {
+              "content": "Creates the EID session for a DC flowType verification. This is a deferred session creation - the HopaeConnect session was created during createVerification, and this endpoint creates the EID session (verifier request) when the client is ready to display the QR code.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "verifications",
+                "dc-request"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"verificationId\": \"<string>\",\n  \"userData\": {\n    \"personalNumber\": \"<string>\",\n    \"cprNumber\": \"<string>\",\n    \"phoneNumber\": \"<string>\",\n    \"nric\": \"<string>\",\n    \"emiratesId\": \"<string>\",\n    \"documentNumber\": \"<string>\",\n    \"mobileNumber\": \"<string>\",\n    \"email\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "fa244c5f-c99a-40ec-a586-f709b9c49f50",
+              "name": "DC request created successfully",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    "dc-request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"verificationId\": \"<string>\",\n  \"userData\": {\n    \"personalNumber\": \"<string>\",\n    \"cprNumber\": \"<string>\",\n    \"phoneNumber\": \"<string>\",\n    \"nric\": \"<string>\",\n    \"emiratesId\": \"<string>\",\n    \"documentNumber\": \"<string>\",\n    \"mobileNumber\": \"<string>\",\n    \"email\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"requestBase64\": \"string\",\n  \"dcSessionId\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8d2b42ed-726a-47f4-9687-082d8c964846",
+              "name": "Invalid flow type or verification status",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    "dc-request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"verificationId\": \"<string>\",\n  \"userData\": {\n    \"personalNumber\": \"<string>\",\n    \"cprNumber\": \"<string>\",\n    \"phoneNumber\": \"<string>\",\n    \"nric\": \"<string>\",\n    \"emiratesId\": \"<string>\",\n    \"documentNumber\": \"<string>\",\n    \"mobileNumber\": \"<string>\",\n    \"email\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "a75dd96d-4998-4981-a02b-9b866995f5ba",
+              "name": "Verification not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "verifications",
+                    "dc-request"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"verificationId\": \"<string>\",\n  \"userData\": {\n    \"personalNumber\": \"<string>\",\n    \"cprNumber\": \"<string>\",\n    \"phoneNumber\": \"<string>\",\n    \"nric\": \"<string>\",\n    \"emiratesId\": \"<string>\",\n    \"documentNumber\": \"<string>\",\n    \"mobileNumber\": \"<string>\",\n    \"email\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://sandbox.api.hopae.com/connect",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "0d0307ee-d6d2-4f10-af44-da3ed710fb99",
+    "name": "hConnect Console - API Keys Verifications API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.\n\nContact Support:\n Name: hConnect Support\n Email: dev@hopae.com",
+      "type": "text/plain"
+    }
+  }
+}

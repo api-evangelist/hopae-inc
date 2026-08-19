@@ -1,0 +1,124 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "hConnect Console - API Keys Verifications API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Verifications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create Verification",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://sandbox.api.hopae.com/connect/v1/verifications",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiates a new identity verification session with the specified eID provider."
+        },
+        {
+          "info": {
+            "name": "Get Verification Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/verifications/:verificationId",
+            "params": [
+              {
+                "name": "verificationId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the verification session."
+              }
+            ]
+          },
+          "docs": "Retrieves the current status and result of a verification session."
+        },
+        {
+          "info": {
+            "name": "Cancel Verification",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://sandbox.api.hopae.com/connect/v1/verifications/:verificationId",
+            "params": [
+              {
+                "name": "verificationId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier for the verification session."
+              }
+            ]
+          },
+          "docs": "Cancels and deletes an ongoing verification session."
+        },
+        {
+          "info": {
+            "name": "Get evidence for a verification",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/verifications/:verificationId/evidence",
+            "params": [
+              {
+                "name": "verificationId",
+                "value": "1234567890abcdef",
+                "type": "path",
+                "description": "Unique verification identifier"
+              }
+            ]
+          },
+          "docs": "Returns the presentation-ready evidence object captured during verification (object format). If evidence is not available or verification is incomplete, appropriate errors are returned."
+        },
+        {
+          "info": {
+            "name": "Get userinfo for a verification",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/verifications/:verificationId/userinfo",
+            "params": [
+              {
+                "name": "verificationId",
+                "value": "1234567890abcdef",
+                "type": "path",
+                "description": "Unique verification identifier"
+              }
+            ]
+          },
+          "docs": "Returns user information aligned with OIDC /userinfo output. Contains authentication context, user claims, provenance, and missing_claims."
+        },
+        {
+          "info": {
+            "name": "Create DC request for Digital Credentials flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://sandbox.api.hopae.com/connect/v1/verifications/dc-request",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates the EID session for a DC flowType verification. This is a deferred session creation - the HopaeConnect session was created during createVerification, and this endpoint creates the EID session (verifier request) when the client is ready to display the QR code."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,203 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "hConnect Console - API Keys Workspace API - Workflows API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Workspace API - Workflows",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List available node types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/workflows/node-types",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns all available flow node types with their fields and placement constraints."
+        },
+        {
+          "info": {
+            "name": "List all workflows",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/workflows",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns all workflows for the app, including the default workflow."
+        },
+        {
+          "info": {
+            "name": "Create a workflow",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/workflows",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new workflow for the app. Provider keys in `providers` must exist in `app.providers`. Maximum 100 workflows per app. If `workflowId` is omitted, it is auto-generated from `name`."
+        },
+        {
+          "info": {
+            "name": "Get a workflow",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/workflows/:workflowId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              },
+              {
+                "name": "workflowId",
+                "value": "",
+                "type": "path",
+                "description": "Workflow identifier"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a workflow"
+        },
+        {
+          "info": {
+            "name": "Update a workflow",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/workflows/:workflowId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              },
+              {
+                "name": "workflowId",
+                "value": "",
+                "type": "path",
+                "description": "Workflow identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Partially update a workflow. Only provided fields are changed. Provider keys in `providers` must exist in `app.providers`."
+        },
+        {
+          "info": {
+            "name": "Delete a workflow",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/workflows/:workflowId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              },
+              {
+                "name": "workflowId",
+                "value": "",
+                "type": "path",
+                "description": "Workflow identifier"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete a workflow. Cannot delete the default workflow — change default first via set-default."
+        },
+        {
+          "info": {
+            "name": "Set a workflow as default",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/workflows/:workflowId/set-default",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              },
+              {
+                "name": "workflowId",
+                "value": "",
+                "type": "path",
+                "description": "Workflow identifier to set as default"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Set this workflow as the app default. The default workflow is used when no workflow_id is specified in OIDC authorize."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

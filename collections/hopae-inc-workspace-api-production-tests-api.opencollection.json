@@ -1,0 +1,97 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "hConnect Console - API Keys Workspace API - Production Tests API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Workspace API - Production Tests",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List production test challenges",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/production-tests",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns all production test challenges for the app."
+        },
+        {
+          "info": {
+            "name": "Create a production test challenge",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/production-tests",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new production test challenge for the app. The app name is automatically used as the host name."
+        },
+        {
+          "info": {
+            "name": "Get challenge report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/apps/:id/production-tests/:challengeId/report",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "App client ID"
+              },
+              {
+                "name": "challengeId",
+                "value": "",
+                "type": "path",
+                "description": "Challenge ID"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns challenge info with per-provider completion count and average completion time."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

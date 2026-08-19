@@ -1,0 +1,277 @@
+{
+  "item": [
+    {
+      "id": "5e5a9323-d5f9-405c-b1a0-5d104346b4fe",
+      "name": "Providers",
+      "description": {
+        "content": "eID provider discovery",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "fd35fb2b-064e-461e-88fc-38e994b32ed8",
+          "name": "Get Providers",
+          "request": {
+            "name": "Get Providers",
+            "description": {
+              "content": "Retrieves a list of available eID providers.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "providers"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "status",
+                  "value": "<string>",
+                  "description": "The status of the provider."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "344af46f-6c35-480f-a1b6-a56b4ae2cd8e",
+              "name": "Providers retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "providers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"string\",\n    \"logoUrl\": \"string\",\n    \"name\": \"string\",\n    \"description\": \"string\",\n    \"countries\": [\n      \"string\",\n      \"string\"\n    ],\n    \"status\": \"action_required\"\n  },\n  {\n    \"id\": \"string\",\n    \"logoUrl\": \"string\",\n    \"name\": \"string\",\n    \"description\": \"string\",\n    \"countries\": [\n      \"string\",\n      \"string\"\n    ],\n    \"status\": \"activated\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6b140db0-3ed3-4ee5-9f4a-94053a5d7c72",
+              "name": "Bad Request - Invalid parameters or eID not enabled.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "providers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "394e64dc-bfe8-46c3-8f4a-0af2678356b1",
+              "name": "Unauthorized - Invalid client credentials.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "providers"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a2127f22-6b01-40c2-af73-33ee8a81f175",
+          "name": "Get provider configuration",
+          "request": {
+            "name": "Get provider configuration",
+            "description": {
+              "content": "Get provider-specific configuration including required userData fields and their options. For example, iDIN requires a presetBank field with available Dutch bank options.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v1",
+                "providers",
+                ":providerId",
+                "configuration"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "providerId",
+                  "description": "(Required) Provider identifier (e.g., idin)"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [
+            {
+              "id": "0077db16-fb17-4732-8b29-cb5ed26318fb",
+              "name": "Provider configuration with required fields and options",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "providers",
+                    ":providerId",
+                    "configuration"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "providerId",
+                      "description": "(Required) Provider identifier (e.g., idin)"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"providerId\": \"idin\",\n  \"requiredUserData\": [\n    {\n      \"field\": \"presetBank\",\n      \"type\": \"select\",\n      \"required\": true,\n      \"label\": \"Bank Selection\",\n      \"description\": \"Select your Dutch bank for iDIN verification\",\n      \"options\": [\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        },\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        }\n      ],\n      \"pattern\": \"^[A-Z]{2}[0-9]{9}$\"\n    },\n    {\n      \"field\": \"presetBank\",\n      \"type\": \"select\",\n      \"required\": true,\n      \"label\": \"Bank Selection\",\n      \"description\": \"Select your Dutch bank for iDIN verification\",\n      \"options\": [\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        },\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        }\n      ],\n      \"pattern\": \"^[A-Z]{2}[0-9]{9}$\"\n    }\n  ],\n  \"flowTypes\": [\n    \"redirect\"\n  ],\n  \"optionalUserData\": [\n    {\n      \"field\": \"presetBank\",\n      \"type\": \"select\",\n      \"required\": true,\n      \"label\": \"Bank Selection\",\n      \"description\": \"Select your Dutch bank for iDIN verification\",\n      \"options\": [\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        },\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        }\n      ],\n      \"pattern\": \"^[A-Z]{2}[0-9]{9}$\"\n    },\n    {\n      \"field\": \"presetBank\",\n      \"type\": \"select\",\n      \"required\": true,\n      \"label\": \"Bank Selection\",\n      \"description\": \"Select your Dutch bank for iDIN verification\",\n      \"options\": [\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        },\n        {\n          \"value\": \"ABNANL2A\",\n          \"label\": \"ABN AMRO\"\n        }\n      ],\n      \"pattern\": \"^[A-Z]{2}[0-9]{9}$\"\n    }\n  ],\n  \"lastUpdated\": \"2024-01-15T10:30:00Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://sandbox.api.hopae.com/connect",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "b9f5a6fe-38e2-4ffc-ba9a-4d4462e2d169",
+    "name": "hConnect Console - API Keys Providers API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.\n\nContact Support:\n Name: hConnect Support\n Email: dev@hopae.com",
+      "type": "text/plain"
+    }
+  }
+}

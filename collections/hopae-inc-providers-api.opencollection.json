@@ -1,0 +1,56 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "hConnect Console - API Keys Providers API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Providers",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Providers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/providers",
+            "params": [
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "The status of the provider."
+              }
+            ]
+          },
+          "docs": "Retrieves a list of available eID providers."
+        },
+        {
+          "info": {
+            "name": "Get provider configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://sandbox.api.hopae.com/connect/v1/providers/:providerId/configuration",
+            "params": [
+              {
+                "name": "providerId",
+                "value": "idin",
+                "type": "path",
+                "description": "Provider identifier (e.g., idin)"
+              }
+            ]
+          },
+          "docs": "Get provider-specific configuration including required userData fields and their options. For example, iDIN requires a presetBank field with available Dutch bank options."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
