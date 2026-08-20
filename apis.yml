@@ -94,6 +94,8 @@ apis:
   humanURL: https://docs.hopae.com
   baseURL: https://sandbox.api.hopae.com/connect
   tags:
+  - Verification
+  tags_raw:
   - Verifications
   properties:
   - type: OpenAPI
