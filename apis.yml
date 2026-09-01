@@ -106,7 +106,7 @@ apis:
   humanURL: https://docs.hopae.com
   baseURL: https://sandbox.api.hopae.com/connect
   tags:
-  - Verifications
+  - Verification
   tags_raw:
   - Verifications
   properties:
