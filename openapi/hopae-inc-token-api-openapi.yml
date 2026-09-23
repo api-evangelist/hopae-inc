@@ -1,6 +1,6 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: hConnect Console - API Keys Token API
+  title: hConnect Token API
   description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
   version: 1.0.0
   contact:

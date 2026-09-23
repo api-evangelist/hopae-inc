@@ -1,6 +1,6 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: hConnect Console - API Keys Verifications API
+  title: hConnect Verifications API
   description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
   version: 1.0.0
   contact:
@@ -200,7 +200,6 @@ components:
             type: string
         user:
           description: 'User profile claims. `null` for pure match flows (`verification_model: "match"`).'
-          nullable: true
           allOf:
           - $ref: '#/components/schemas/VerificationUserBlockDto'
         provenance:
@@ -220,6 +219,71 @@ components:
           description: Match envelope. Present only when `verification_model` is `match`.
           allOf:
           - $ref: '#/components/schemas/MatchEnvelopeDto'
+    DcRequestDto:
+      type: object
+      properties:
+        verificationId:
+          type: string
+          description: Verification ID
+        userData:
+          description: User data for DC request (docType, protocol, etc.)
+          allOf:
+          - $ref: '#/components/schemas/AuthenticationHint'
+      required:
+      - verificationId
+    AuthenticationHint:
+      type: object
+      properties:
+        personalNumber:
+          type: string
+          description: Swedish personal number (BankID)
+        cprNumber:
+          type: string
+          description: Danish CPR number (MitID)
+        phoneNumber:
+          type: string
+          description: Phone number (UAE Pass)
+        nric:
+          type: string
+          description: Singapore NRIC (Singpass)
+        emiratesId:
+          type: string
+          description: UAE Emirates ID
+        documentNumber:
+          type: string
+          description: Document number (mDL)
+        mobileNumber:
+          type: string
+          description: Alternative mobile number
+        email:
+          type: string
+          description: Email address
+    MatchFieldDetailDto:
+      type: object
+      properties:
+        matched:
+          type: boolean
+          description: Whether this field's submitted value matched the authoritative source.
+        submitted_value:
+          type: string
+          description: Echo of the value the RP submitted via `matchData`. Present in `/userinfo` responses for matchData fields only; never present on passthrough verifier keys (e.g., `face_photo_disparity`). Omitted from id_token claims.
+        similarity:
+          type: number
+          description: Similarity score (0–100). Present only when the upstream verifier returned a similarity score.
+      required:
+      - matched
+    VerificationProvenanceDto:
+      type: object
+      properties:
+        presentation:
+          type: object
+          description: Presentation context
+        _metadata:
+          type: object
+          description: Metadata
+    VerificationUserBlockDto:
+      type: object
+      properties: {}
     GetVerificationResponse:
       type: object
       properties:
@@ -282,21 +346,6 @@ components:
         createdAt:
           type: string
           format: date-time
-    VerificationUserBlockDto:
-      type: object
-      properties: {}
-    DcRequestResponseDto:
-      type: object
-      properties:
-        requestBase64:
-          type: string
-          description: Base64 encoded request data
-        dcSessionId:
-          type: string
-          description: DC session ID from EID service
-      required:
-      - requestBase64
-      - dcSessionId
     MatchEnvelopeDto:
       type: object
       description: Result envelope for match-capable providers. Present only when `verification_model` is `match`.
@@ -324,41 +373,6 @@ components:
       - matched
       - granularity
       - submitted_fields
-    VerificationProvenanceDto:
-      type: object
-      properties:
-        presentation:
-          type: object
-          description: Presentation context
-        _metadata:
-          type: object
-          description: Metadata
-    MatchFieldDetailDto:
-      type: object
-      properties:
-        matched:
-          type: boolean
-          description: Whether this field's submitted value matched the authoritative source.
-        submitted_value:
-          type: string
-          description: Echo of the value the RP submitted via `matchData`. Present in `/userinfo` responses for matchData fields only; never present on passthrough verifier keys (e.g., `face_photo_disparity`). Omitted from id_token claims.
-        similarity:
-          type: number
-          description: Similarity score (0–100). Present only when the upstream verifier returned a similarity score.
-      required:
-      - matched
-    DcRequestDto:
-      type: object
-      properties:
-        verificationId:
-          type: string
-          description: Verification ID
-        userData:
-          description: User data for DC request (docType, protocol, etc.)
-          allOf:
-          - $ref: '#/components/schemas/AuthenticationHint'
-      required:
-      - verificationId
     CreateVerificationRequest:
       type: object
       properties:
@@ -381,33 +395,18 @@ components:
             email: user@example.com
       required:
       - providerId
-    AuthenticationHint:
+    DcRequestResponseDto:
       type: object
       properties:
-        personalNumber:
+        requestBase64:
           type: string
-          description: Swedish personal number (BankID)
-        cprNumber:
+          description: Base64 encoded request data
+        dcSessionId:
           type: string
-          description: Danish CPR number (MitID)
-        phoneNumber:
-          type: string
-          description: Phone number (UAE Pass)
-        nric:
-          type: string
-          description: Singapore NRIC (Singpass)
-        emiratesId:
-          type: string
-          description: UAE Emirates ID
-        documentNumber:
-          type: string
-          description: Document number (mDL)
-        mobileNumber:
-          type: string
-          description: Alternative mobile number
-        email:
-          type: string
-          description: Email address
+          description: DC session ID from EID service
+      required:
+      - requestBase64
+      - dcSessionId
   securitySchemes:
     basicAuth:
       type: http

@@ -1,6 +1,6 @@
-openapi: 3.0.0
+openapi: 3.2.0
 info:
-  title: hConnect Console - API Keys Workspace API - Apps API
+  title: hConnect Workspace API - Apps API
   description: The hConnect API provides a unified interface for electronic identity verification across multiple eID providers globally.
   version: 1.0.0
   contact:
@@ -379,122 +379,6 @@ paths:
       - Workspace API - Apps
 components:
   schemas:
-    PaginatedAppsResponseDto:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: object
-        total:
-          type: number
-        limit:
-          type: number
-        offset:
-          type: number
-      required:
-      - data
-      - total
-      - limit
-      - offset
-    WorkflowEntryDto:
-      type: object
-      properties:
-        workflowId:
-          type: string
-        name:
-          type: string
-        entryNodeId:
-          type: string
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlowNodeDto'
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
-      required:
-      - workflowId
-      - name
-      - entryNodeId
-      - nodes
-    FlowNodeDto:
-      type: object
-      properties:
-        id:
-          type: string
-          example: nd_ab12cd34
-        type:
-          type: string
-          enum:
-          - request
-          - response
-          - verification
-          - check-min-loa
-          - check-claim
-          - evaluate
-          - if
-        next:
-          type: object
-          description: 'Next: string (single output) or NextRoute[] (IF branching)'
-        config:
-          type: object
-          description: Type-specific configuration (max depth 5, max 50 keys per level)
-      required:
-      - id
-      - type
-    WebhookConfigDto:
-      type: object
-      properties:
-        url:
-          type: string
-        enabled:
-          type: boolean
-          default: true
-        retryAttempts:
-          type: number
-          default: 3
-        timeoutSeconds:
-          type: number
-          default: 10
-        secret:
-          type: string
-          description: Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret.
-        events:
-          default: []
-          type: array
-          items:
-            type: string
-      required:
-      - enabled
-      - retryAttempts
-      - timeoutSeconds
-      - events
-    ListAppProvidersResponseDto:
-      type: object
-      properties:
-        providers:
-          description: Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
-          type: array
-          items:
-            $ref: '#/components/schemas/AppProviderSummaryDto'
-        total:
-          type: number
-          example: 3
-          description: Total number of providers in this response
-      required:
-      - providers
-      - total
-    CreateAppDto:
-      type: object
-      properties:
-        name:
-          type: string
-      required:
-      - name
     WorkspaceAppDto:
       type: object
       properties:
@@ -582,15 +466,6 @@ components:
       - results
       - successCount
       - errorCount
-    RotateClientSecretResponseDto:
-      type: object
-      properties:
-        clientSecret:
-          type: string
-          description: The newly generated clientSecret. Persist immediately; cannot be retrieved later.
-          example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
-      required:
-      - clientSecret
     AppProviderSummaryDto:
       type: object
       properties:
@@ -629,6 +504,146 @@ components:
       - currentStep
       - currentStepIndex
       - stepCount
+    CreateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    UpdateRedirectUrisDto:
+      type: object
+      properties:
+        redirectUris:
+          type: array
+          items:
+            type: string
+      required:
+      - redirectUris
+    RotateClientSecretResponseDto:
+      type: object
+      properties:
+        clientSecret:
+          type: string
+          description: The newly generated clientSecret. Persist immediately; cannot be retrieved later.
+          example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
+      required:
+      - clientSecret
+    BatchCreateAppItemDto:
+      type: object
+      properties:
+        name:
+          type: string
+        redirectUris:
+          type: array
+          items:
+            type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        idempotencyKey:
+          type: string
+      required:
+      - name
+    WebhookConfigDto:
+      type: object
+      properties:
+        url:
+          type: string
+        enabled:
+          type: boolean
+          default: true
+        retryAttempts:
+          type: number
+          default: 3
+        timeoutSeconds:
+          type: number
+          default: 10
+        secret:
+          type: string
+          description: Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret.
+        events:
+          default: []
+          type: array
+          items:
+            type: string
+      required:
+      - enabled
+      - retryAttempts
+      - timeoutSeconds
+      - events
+    UpdateWebhookConfigDto:
+      type: object
+      properties:
+        url:
+          type: string
+        enabled:
+          type: boolean
+        retryAttempts:
+          type: number
+        timeoutSeconds:
+          type: number
+        events:
+          type: array
+          items:
+            type: string
+    ListAppProvidersResponseDto:
+      type: object
+      properties:
+        providers:
+          description: Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
+          type: array
+          items:
+            $ref: '#/components/schemas/AppProviderSummaryDto'
+        total:
+          type: number
+          example: 3
+          description: Total number of providers in this response
+      required:
+      - providers
+      - total
+    FlowNodeDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: nd_ab12cd34
+        type:
+          type: string
+          enum:
+          - request
+          - response
+          - verification
+          - check-min-loa
+          - check-claim
+          - evaluate
+          - if
+        next:
+          type: object
+          description: 'Next: string (single output) or NextRoute[] (IF branching)'
+        config:
+          type: object
+          description: Type-specific configuration (max depth 5, max 50 keys per level)
+      required:
+      - id
+      - type
+    PaginatedAppsResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        total:
+          type: number
+        limit:
+          type: number
+        offset:
+          type: number
+      required:
+      - data
+      - total
+      - limit
+      - offset
     UpdateAppDto:
       type: object
       properties:
@@ -647,45 +662,30 @@ components:
           type: string
         defaultFailureRedirectUri:
           type: string
-    BatchCreateAppItemDto:
+    WorkflowEntryDto:
       type: object
       properties:
+        workflowId:
+          type: string
         name:
           type: string
-        redirectUris:
+        entryNodeId:
+          type: string
+        nodes:
           type: array
           items:
-            type: string
-        webhookConfig:
-          $ref: '#/components/schemas/WebhookConfigDto'
-        idempotencyKey:
+            $ref: '#/components/schemas/FlowNodeDto'
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
           type: string
       required:
+      - workflowId
       - name
-    UpdateWebhookConfigDto:
-      type: object
-      properties:
-        url:
-          type: string
-        enabled:
-          type: boolean
-        retryAttempts:
-          type: number
-        timeoutSeconds:
-          type: number
-        events:
-          type: array
-          items:
-            type: string
-    UpdateRedirectUrisDto:
-      type: object
-      properties:
-        redirectUris:
-          type: array
-          items:
-            type: string
-      required:
-      - redirectUris
+      - entryNodeId
+      - nodes
   securitySchemes:
     basicAuth:
       type: http

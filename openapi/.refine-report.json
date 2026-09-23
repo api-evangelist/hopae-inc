@@ -1,15 +1,7 @@
 {
   "provider": "hopae-inc",
   "sources": [
-    "hopae-inc-console-api-keys-api-openapi.yml",
-    "hopae-inc-providers-api-openapi.yml",
-    "hopae-inc-token-api-openapi.yml",
-    "hopae-inc-verifications-api-openapi.yml",
-    "hopae-inc-workspace-api-activation-api-openapi.yml",
-    "hopae-inc-workspace-api-apps-api-openapi.yml",
-    "hopae-inc-workspace-api-production-tests-api-openapi.yml",
-    "hopae-inc-workspace-api-workflows-api-openapi.yml",
-    "hopae-inc-workspace-api-workspace-api-openapi.yml"
+    "_original/hopae-inc-hconnect-openapi-original.json"
   ],
   "outputs": [
     "hopae-inc-console-api-keys-api-openapi.yml",
@@ -25,6 +17,20 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "hopae-inc-hconnect-openapi-original.json: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "hopae-inc-console-api-keys-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-providers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-token-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-verifications-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-workspace-api-activation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-workspace-api-apps-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-workspace-api-production-tests-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-workspace-api-workflows-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hopae-inc-workspace-api-workspace-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
