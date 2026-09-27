@@ -1,5 +1,5 @@
 aid: hopae-inc
-name: Hopae, Inc.
+name: Hopae
 description: >-
   Hopae, Inc. (Hopae S.A.) is a digital identity infrastructure company that connects
   verification providers, regulated businesses, and trust service providers to 65+
@@ -279,3 +279,4 @@ x-enrichment:
   status: backfilled
   pass: local-v1
   note: backfilled from .gitignore signal + verified work evidence
+x-legal-name: Hopae, Inc.

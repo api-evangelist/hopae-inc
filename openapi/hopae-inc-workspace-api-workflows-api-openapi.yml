@@ -231,6 +231,58 @@ paths:
       - workspace-api-key: []
 components:
   schemas:
+    CreateWorkflowDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: KYC Premium
+        entryNodeId:
+          type: string
+          example: nd_ab12cd34
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
+      required:
+      - name
+      - entryNodeId
+      - nodes
+    WorkflowResponseDto:
+      type: object
+      properties:
+        workflowId:
+          type: string
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+      - workflowId
+      - name
+      - entryNodeId
+      - nodes
+    UpdateWorkflowDto:
+      type: object
+      properties:
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
     FlowNodeDto:
       type: object
       properties:
@@ -256,58 +308,6 @@ components:
       required:
       - id
       - type
-    WorkflowResponseDto:
-      type: object
-      properties:
-        workflowId:
-          type: string
-        name:
-          type: string
-        entryNodeId:
-          type: string
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlowNodeDto'
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
-      required:
-      - workflowId
-      - name
-      - entryNodeId
-      - nodes
-    CreateWorkflowDto:
-      type: object
-      properties:
-        name:
-          type: string
-          example: KYC Premium
-        entryNodeId:
-          type: string
-          example: nd_ab12cd34
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlowNodeDto'
-      required:
-      - name
-      - entryNodeId
-      - nodes
-    UpdateWorkflowDto:
-      type: object
-      properties:
-        name:
-          type: string
-        entryNodeId:
-          type: string
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlowNodeDto'
   securitySchemes:
     basicAuth:
       type: http
