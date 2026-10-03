@@ -95,6 +95,20 @@ paths:
       - basic-auth: []
 components:
   schemas:
+    UserDataOptionDto:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Option value to be used in userData
+          example: ABNANL2A
+        label:
+          type: string
+          description: Human-readable label for the option
+          example: ABN AMRO
+      required:
+      - value
+      - label
     ProviderConfigurationDto:
       type: object
       properties:
@@ -127,20 +141,6 @@ components:
       - providerId
       - requiredUserData
       - flowTypes
-    UserDataOptionDto:
-      type: object
-      properties:
-        value:
-          type: string
-          description: Option value to be used in userData
-          example: ABNANL2A
-        label:
-          type: string
-          description: Human-readable label for the option
-          example: ABN AMRO
-      required:
-      - value
-      - label
     UserDataFieldDto:
       type: object
       properties:

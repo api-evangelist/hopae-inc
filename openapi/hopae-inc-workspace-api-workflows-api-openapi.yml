@@ -248,30 +248,6 @@ components:
       - name
       - entryNodeId
       - nodes
-    WorkflowResponseDto:
-      type: object
-      properties:
-        workflowId:
-          type: string
-        name:
-          type: string
-        entryNodeId:
-          type: string
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlowNodeDto'
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
-      required:
-      - workflowId
-      - name
-      - entryNodeId
-      - nodes
     UpdateWorkflowDto:
       type: object
       properties:
@@ -308,6 +284,30 @@ components:
       required:
       - id
       - type
+    WorkflowResponseDto:
+      type: object
+      properties:
+        workflowId:
+          type: string
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+      - workflowId
+      - name
+      - entryNodeId
+      - nodes
   securitySchemes:
     basicAuth:
       type: http

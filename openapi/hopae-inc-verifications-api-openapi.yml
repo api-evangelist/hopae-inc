@@ -178,67 +178,6 @@ paths:
       - basic-auth: []
 components:
   schemas:
-    DcRequestDto:
-      type: object
-      properties:
-        verificationId:
-          type: string
-          description: Verification ID
-        userData:
-          description: User data for DC request (docType, protocol, etc.)
-          allOf:
-          - $ref: '#/components/schemas/AuthenticationHint'
-      required:
-      - verificationId
-    GetVerificationResponse:
-      type: object
-      properties:
-        verificationId:
-          type: string
-        status:
-          type: string
-        providerId:
-          type: string
-        authorizationCode:
-          type: string
-          description: Appears when status is 'completed'.
-        verifiedAttributes:
-          type: object
-          description: Contains user's verified data upon completion.
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            message:
-              type: string
-        expiresAt:
-          type: string
-          format: date-time
-        verifiedAt:
-          type: string
-          format: date-time
-    DcRequestResponseDto:
-      type: object
-      properties:
-        requestBase64:
-          type: string
-          description: Base64 encoded request data
-        dcSessionId:
-          type: string
-          description: DC session ID from EID service
-      required:
-      - requestBase64
-      - dcSessionId
-    VerificationProvenanceDto:
-      type: object
-      properties:
-        presentation:
-          type: object
-          description: Presentation context
-        _metadata:
-          type: object
-          description: Metadata
     GetVerificationUserInfoResponseDto:
       type: object
       properties:
@@ -280,6 +219,160 @@ components:
           description: Match envelope. Present only when `verification_model` is `match`.
           allOf:
           - $ref: '#/components/schemas/MatchEnvelopeDto'
+    MatchFieldDetailDto:
+      type: object
+      properties:
+        matched:
+          type: boolean
+          description: Whether this field's submitted value matched the authoritative source.
+        submitted_value:
+          type: string
+          description: Echo of the value the RP submitted via `matchData`. Present in `/userinfo` responses for matchData fields only; never present on passthrough verifier keys (e.g., `face_photo_disparity`). Omitted from id_token claims.
+        similarity:
+          type: number
+          description: Similarity score (0–100). Present only when the upstream verifier returned a similarity score.
+      required:
+      - matched
+    VerificationProvenanceDto:
+      type: object
+      properties:
+        presentation:
+          type: object
+          description: Presentation context
+        _metadata:
+          type: object
+          description: Metadata
+    DcRequestDto:
+      type: object
+      properties:
+        verificationId:
+          type: string
+          description: Verification ID
+        userData:
+          description: User data for DC request (docType, protocol, etc.)
+          allOf:
+          - $ref: '#/components/schemas/AuthenticationHint'
+      required:
+      - verificationId
+    DcRequestResponseDto:
+      type: object
+      properties:
+        requestBase64:
+          type: string
+          description: Base64 encoded request data
+        dcSessionId:
+          type: string
+          description: DC session ID from EID service
+      required:
+      - requestBase64
+      - dcSessionId
+    MatchEnvelopeDto:
+      type: object
+      description: Result envelope for match-capable providers. Present only when `verification_model` is `match`.
+      properties:
+        matched:
+          type: boolean
+          description: Aggregate match outcome across all submitted fields.
+        granularity:
+          type: string
+          enum:
+          - aggregate
+          - per_field
+          description: Determines whether `details` is included. `per_field` exposes per-field outcomes; `aggregate` exposes only the overall `matched` flag.
+        submitted_fields:
+          type: array
+          items:
+            type: string
+          description: Field keys the RP supplied in `matchData`. Provider-native names — not normalised.
+        details:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MatchFieldDetailDto'
+          description: Per-field outcomes, keyed by field name. Present only when `granularity` is `per_field`. May include verifier keys beyond `submitted_fields` (e.g., `face_photo_disparity` from mObywatel) when the upstream provider emits them.
+      required:
+      - matched
+      - granularity
+      - submitted_fields
+    CreateVerificationRequest:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: The identifier for the desired eID provider.
+          example: bankidse
+        redirectUri:
+          type: string
+          format: uri
+          description: URL to redirect to after a redirect-based verification.
+        webhookUrl:
+          type: string
+          format: uri
+          description: URL to receive asynchronous status updates.
+        userData:
+          type: object
+          description: User information required by certain eID providers.
+          example:
+            email: user@example.com
+      required:
+      - providerId
+    VerificationUserBlockDto:
+      type: object
+      properties: {}
+    AuthenticationHint:
+      type: object
+      properties:
+        personalNumber:
+          type: string
+          description: Swedish personal number (BankID)
+        cprNumber:
+          type: string
+          description: Danish CPR number (MitID)
+        phoneNumber:
+          type: string
+          description: Phone number (UAE Pass)
+        nric:
+          type: string
+          description: Singapore NRIC (Singpass)
+        emiratesId:
+          type: string
+          description: UAE Emirates ID
+        documentNumber:
+          type: string
+          description: Document number (mDL)
+        mobileNumber:
+          type: string
+          description: Alternative mobile number
+        email:
+          type: string
+          description: Email address
+    GetVerificationResponse:
+      type: object
+      properties:
+        verificationId:
+          type: string
+        status:
+          type: string
+        providerId:
+          type: string
+        authorizationCode:
+          type: string
+          description: Appears when status is 'completed'.
+        verifiedAttributes:
+          type: object
+          description: Contains user's verified data upon completion.
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+        expiresAt:
+          type: string
+          format: date-time
+        verifiedAt:
+          type: string
+          format: date-time
     CreateVerificationResponse:
       type: object
       properties:
@@ -314,99 +407,6 @@ components:
         createdAt:
           type: string
           format: date-time
-    MatchEnvelopeDto:
-      type: object
-      description: Result envelope for match-capable providers. Present only when `verification_model` is `match`.
-      properties:
-        matched:
-          type: boolean
-          description: Aggregate match outcome across all submitted fields.
-        granularity:
-          type: string
-          enum:
-          - aggregate
-          - per_field
-          description: Determines whether `details` is included. `per_field` exposes per-field outcomes; `aggregate` exposes only the overall `matched` flag.
-        submitted_fields:
-          type: array
-          items:
-            type: string
-          description: Field keys the RP supplied in `matchData`. Provider-native names — not normalised.
-        details:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/MatchFieldDetailDto'
-          description: Per-field outcomes, keyed by field name. Present only when `granularity` is `per_field`. May include verifier keys beyond `submitted_fields` (e.g., `face_photo_disparity` from mObywatel) when the upstream provider emits them.
-      required:
-      - matched
-      - granularity
-      - submitted_fields
-    MatchFieldDetailDto:
-      type: object
-      properties:
-        matched:
-          type: boolean
-          description: Whether this field's submitted value matched the authoritative source.
-        submitted_value:
-          type: string
-          description: Echo of the value the RP submitted via `matchData`. Present in `/userinfo` responses for matchData fields only; never present on passthrough verifier keys (e.g., `face_photo_disparity`). Omitted from id_token claims.
-        similarity:
-          type: number
-          description: Similarity score (0–100). Present only when the upstream verifier returned a similarity score.
-      required:
-      - matched
-    VerificationUserBlockDto:
-      type: object
-      properties: {}
-    CreateVerificationRequest:
-      type: object
-      properties:
-        providerId:
-          type: string
-          description: The identifier for the desired eID provider.
-          example: bankidse
-        redirectUri:
-          type: string
-          format: uri
-          description: URL to redirect to after a redirect-based verification.
-        webhookUrl:
-          type: string
-          format: uri
-          description: URL to receive asynchronous status updates.
-        userData:
-          type: object
-          description: User information required by certain eID providers.
-          example:
-            email: user@example.com
-      required:
-      - providerId
-    AuthenticationHint:
-      type: object
-      properties:
-        personalNumber:
-          type: string
-          description: Swedish personal number (BankID)
-        cprNumber:
-          type: string
-          description: Danish CPR number (MitID)
-        phoneNumber:
-          type: string
-          description: Phone number (UAE Pass)
-        nric:
-          type: string
-          description: Singapore NRIC (Singpass)
-        emiratesId:
-          type: string
-          description: UAE Emirates ID
-        documentNumber:
-          type: string
-          description: Document number (mDL)
-        mobileNumber:
-          type: string
-          description: Alternative mobile number
-        email:
-          type: string
-          description: Email address
   securitySchemes:
     basicAuth:
       type: http

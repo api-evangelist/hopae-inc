@@ -379,226 +379,6 @@ paths:
       - Workspace API - Apps
 components:
   schemas:
-    WebhookConfigDto:
-      type: object
-      properties:
-        url:
-          type: string
-        enabled:
-          type: boolean
-          default: true
-        retryAttempts:
-          type: number
-          default: 3
-        timeoutSeconds:
-          type: number
-          default: 10
-        secret:
-          type: string
-          description: Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret.
-        events:
-          default: []
-          type: array
-          items:
-            type: string
-      required:
-      - enabled
-      - retryAttempts
-      - timeoutSeconds
-      - events
-    WorkspaceBatchCreateAppsResponseDto:
-      type: object
-      properties:
-        results:
-          type: array
-          items:
-            type: object
-        successCount:
-          type: number
-        errorCount:
-          type: number
-      required:
-      - results
-      - successCount
-      - errorCount
-    UpdateRedirectUrisDto:
-      type: object
-      properties:
-        redirectUris:
-          type: array
-          items:
-            type: string
-      required:
-      - redirectUris
-    RotateClientSecretResponseDto:
-      type: object
-      properties:
-        clientSecret:
-          type: string
-          description: The newly generated clientSecret. Persist immediately; cannot be retrieved later.
-          example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
-      required:
-      - clientSecret
-    PaginatedAppsResponseDto:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: object
-        total:
-          type: number
-        limit:
-          type: number
-        offset:
-          type: number
-      required:
-      - data
-      - total
-      - limit
-      - offset
-    WorkspaceAppDto:
-      type: object
-      properties:
-        name:
-          type: string
-        logo:
-          type: string
-          description: App-level brand logo (base64 data URL)
-        redirectUris:
-          type: array
-          items:
-            type: string
-        clientId:
-          type: string
-        clientSecret:
-          type: string
-        providers:
-          type: object
-          description: Contract-level provider configurations. Key = provider ID.
-          example:
-            bankidse:
-              enabled: true
-              config: {}
-            frejaid:
-              enabled: false
-              config: {}
-        defaultWorkflowId:
-          type: string
-          example: default
-          description: ID of the default workflow used when workflow_id is not specified
-        workflows:
-          description: Workflow profiles for the app
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkflowEntryDto'
-        organizationId:
-          type: string
-        webhookConfig:
-          $ref: '#/components/schemas/WebhookConfigDto'
-        defaultSuccessRedirectUri:
-          type: string
-        defaultFailureRedirectUri:
-          type: string
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
-      required:
-      - name
-      - redirectUris
-      - clientId
-      - clientSecret
-      - providers
-      - defaultWorkflowId
-      - workflows
-      - organizationId
-      - createdAt
-      - updatedAt
-    UpdateAppDto:
-      type: object
-      properties:
-        name:
-          type: string
-        logo:
-          type: string
-          description: App-level brand logo (base64 data URL). Pass an empty string to remove the logo.
-        redirectUris:
-          type: array
-          items:
-            type: string
-        webhookConfig:
-          $ref: '#/components/schemas/WebhookConfigDto'
-        defaultSuccessRedirectUri:
-          type: string
-        defaultFailureRedirectUri:
-          type: string
-    ListAppProvidersResponseDto:
-      type: object
-      properties:
-        providers:
-          description: Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
-          type: array
-          items:
-            $ref: '#/components/schemas/AppProviderSummaryDto'
-        total:
-          type: number
-          example: 3
-          description: Total number of providers in this response
-      required:
-      - providers
-      - total
-    CreateAppDto:
-      type: object
-      properties:
-        name:
-          type: string
-      required:
-      - name
-    UpdateWebhookConfigDto:
-      type: object
-      properties:
-        url:
-          type: string
-        enabled:
-          type: boolean
-        retryAttempts:
-          type: number
-        timeoutSeconds:
-          type: number
-        events:
-          type: array
-          items:
-            type: string
-    BatchCreateAppsDto:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BatchCreateAppItemDto'
-        continueOnError:
-          type: boolean
-          default: false
-      required:
-      - items
-    BatchCreateAppItemDto:
-      type: object
-      properties:
-        name:
-          type: string
-        redirectUris:
-          type: array
-          items:
-            type: string
-        webhookConfig:
-          $ref: '#/components/schemas/WebhookConfigDto'
-        idempotencyKey:
-          type: string
-      required:
-      - name
     WorkflowEntryDto:
       type: object
       properties:
@@ -661,6 +441,226 @@ components:
       - currentStep
       - currentStepIndex
       - stepCount
+    UpdateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          description: App-level brand logo (base64 data URL). Pass an empty string to remove the logo.
+        redirectUris:
+          type: array
+          items:
+            type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        defaultSuccessRedirectUri:
+          type: string
+        defaultFailureRedirectUri:
+          type: string
+    UpdateWebhookConfigDto:
+      type: object
+      properties:
+        url:
+          type: string
+        enabled:
+          type: boolean
+        retryAttempts:
+          type: number
+        timeoutSeconds:
+          type: number
+        events:
+          type: array
+          items:
+            type: string
+    BatchCreateAppItemDto:
+      type: object
+      properties:
+        name:
+          type: string
+        redirectUris:
+          type: array
+          items:
+            type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        idempotencyKey:
+          type: string
+      required:
+      - name
+    ListAppProvidersResponseDto:
+      type: object
+      properties:
+        providers:
+          description: Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
+          type: array
+          items:
+            $ref: '#/components/schemas/AppProviderSummaryDto'
+        total:
+          type: number
+          example: 3
+          description: Total number of providers in this response
+      required:
+      - providers
+      - total
+    WebhookConfigDto:
+      type: object
+      properties:
+        url:
+          type: string
+        enabled:
+          type: boolean
+          default: true
+        retryAttempts:
+          type: number
+          default: 3
+        timeoutSeconds:
+          type: number
+          default: 10
+        secret:
+          type: string
+          description: Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret.
+        events:
+          default: []
+          type: array
+          items:
+            type: string
+      required:
+      - enabled
+      - retryAttempts
+      - timeoutSeconds
+      - events
+    UpdateRedirectUrisDto:
+      type: object
+      properties:
+        redirectUris:
+          type: array
+          items:
+            type: string
+      required:
+      - redirectUris
+    RotateClientSecretResponseDto:
+      type: object
+      properties:
+        clientSecret:
+          type: string
+          description: The newly generated clientSecret. Persist immediately; cannot be retrieved later.
+          example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
+      required:
+      - clientSecret
+    WorkspaceBatchCreateAppsResponseDto:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+        successCount:
+          type: number
+        errorCount:
+          type: number
+      required:
+      - results
+      - successCount
+      - errorCount
+    BatchCreateAppsDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchCreateAppItemDto'
+        continueOnError:
+          type: boolean
+          default: false
+      required:
+      - items
+    WorkspaceAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          description: App-level brand logo (base64 data URL)
+        redirectUris:
+          type: array
+          items:
+            type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        providers:
+          type: object
+          description: Contract-level provider configurations. Key = provider ID.
+          example:
+            bankidse:
+              enabled: true
+              config: {}
+            frejaid:
+              enabled: false
+              config: {}
+        defaultWorkflowId:
+          type: string
+          example: default
+          description: ID of the default workflow used when workflow_id is not specified
+        workflows:
+          description: Workflow profiles for the app
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowEntryDto'
+        organizationId:
+          type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        defaultSuccessRedirectUri:
+          type: string
+        defaultFailureRedirectUri:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+      - name
+      - redirectUris
+      - clientId
+      - clientSecret
+      - providers
+      - defaultWorkflowId
+      - workflows
+      - organizationId
+      - createdAt
+      - updatedAt
+    PaginatedAppsResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        total:
+          type: number
+        limit:
+          type: number
+        offset:
+          type: number
+      required:
+      - data
+      - total
+      - limit
+      - offset
+    CreateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
     FlowNodeDto:
       type: object
       properties:
