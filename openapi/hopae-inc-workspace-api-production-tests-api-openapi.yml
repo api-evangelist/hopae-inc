@@ -118,6 +118,64 @@ paths:
       - workspace-api-key: []
 components:
   schemas:
+    ChallengeReportResponseDto:
+      type: object
+      properties:
+        challenge:
+          $ref: '#/components/schemas/ChallengeV2ResponseDto'
+        stats:
+          $ref: '#/components/schemas/ChallengeReportStatsDto'
+      required:
+      - challenge
+      - stats
+    ProviderBreakdownDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+        providerName:
+          type: string
+        claimCount:
+          type: number
+      required:
+      - providerId
+      - providerName
+      - claimCount
+    ChallengeRequestResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        status:
+          type: string
+        payload:
+          type: object
+        challengeId:
+          type: string
+        createdAt:
+          type: string
+      required:
+      - id
+      - clientId
+      - status
+      - payload
+      - createdAt
+    UnifiedChallengeItemDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - challenge
+          - request
+        challenge:
+          $ref: '#/components/schemas/ChallengeV2ResponseDto'
+        request:
+          $ref: '#/components/schemas/ChallengeRequestResponseDto'
+      required:
+      - type
     ChallengeReportStatsDto:
       type: object
       properties:
@@ -133,52 +191,6 @@ components:
       - totalParticipations
       - totalClaims
       - providerBreakdown
-    UnifiedChallengeItemDto:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - challenge
-          - request
-        challenge:
-          $ref: '#/components/schemas/ChallengeV2ResponseDto'
-        request:
-          $ref: '#/components/schemas/ChallengeRequestResponseDto'
-      required:
-      - type
-    ChallengeV2ResponseDto:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        expiresAt:
-          type: string
-        createdAt:
-          type: string
-        completedAt:
-          type: string
-        isActive:
-          type: boolean
-        challengeMode:
-          type: string
-        sponsor:
-          type: object
-        sources:
-          type: array
-          items:
-            type: string
-      required:
-      - id
-      - title
-      - expiresAt
-      - createdAt
-      - isActive
-      - challengeMode
     CreateProductionTestDto:
       type: object
       properties:
@@ -213,50 +225,38 @@ components:
           description: Whether to allow duplicate participation (same user + same provider)
       required:
       - title
-    ProviderBreakdownDto:
-      type: object
-      properties:
-        providerId:
-          type: string
-        providerName:
-          type: string
-        claimCount:
-          type: number
-      required:
-      - providerId
-      - providerName
-      - claimCount
-    ChallengeReportResponseDto:
-      type: object
-      properties:
-        challenge:
-          $ref: '#/components/schemas/ChallengeV2ResponseDto'
-        stats:
-          $ref: '#/components/schemas/ChallengeReportStatsDto'
-      required:
-      - challenge
-      - stats
-    ChallengeRequestResponseDto:
+    ChallengeV2ResponseDto:
       type: object
       properties:
         id:
           type: string
-        clientId:
+        title:
           type: string
-        status:
+        description:
           type: string
-        payload:
-          type: object
-        challengeId:
+        expiresAt:
           type: string
         createdAt:
           type: string
+        completedAt:
+          type: string
+        isActive:
+          type: boolean
+        challengeMode:
+          type: string
+        sponsor:
+          type: object
+        sources:
+          type: array
+          items:
+            type: string
       required:
       - id
-      - clientId
-      - status
-      - payload
+      - title
+      - expiresAt
       - createdAt
+      - isActive
+      - challengeMode
   securitySchemes:
     basicAuth:
       type: http

@@ -379,86 +379,33 @@ paths:
       - Workspace API - Apps
 components:
   schemas:
-    WorkflowEntryDto:
+    WebhookConfigDto:
       type: object
       properties:
-        workflowId:
+        url:
           type: string
-        name:
-          type: string
-        entryNodeId:
-          type: string
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlowNodeDto'
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
-      required:
-      - workflowId
-      - name
-      - entryNodeId
-      - nodes
-    AppProviderSummaryDto:
-      type: object
-      properties:
-        providerId:
-          type: string
-          example: mitid
-          description: Provider identifier
         enabled:
           type: boolean
-          example: true
-          description: Whether the provider is enabled on this app
-        state:
-          type: string
-          enum:
-          - not_started
-          - in_progress
-          - completed
-          example: completed
-          description: Overall activation state derived from step completion
-        currentStep:
-          type: string
-          example: activated
-          description: The type key of the current activation step
-        currentStepIndex:
+          default: true
+        retryAttempts:
           type: number
-          example: 3
-          description: Zero-based index of the current step in the step sequence
-        stepCount:
+          default: 3
+        timeoutSeconds:
           type: number
-          example: 4
-          description: Total number of steps in this provider's activation sequence
-      required:
-      - providerId
-      - enabled
-      - state
-      - currentStep
-      - currentStepIndex
-      - stepCount
-    UpdateAppDto:
-      type: object
-      properties:
-        name:
+          default: 10
+        secret:
           type: string
-        logo:
-          type: string
-          description: App-level brand logo (base64 data URL). Pass an empty string to remove the logo.
-        redirectUris:
+          description: Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret.
+        events:
+          default: []
           type: array
           items:
             type: string
-        webhookConfig:
-          $ref: '#/components/schemas/WebhookConfigDto'
-        defaultSuccessRedirectUri:
-          type: string
-        defaultFailureRedirectUri:
-          type: string
+      required:
+      - enabled
+      - retryAttempts
+      - timeoutSeconds
+      - events
     UpdateWebhookConfigDto:
       type: object
       properties:
@@ -489,57 +436,6 @@ components:
           type: string
       required:
       - name
-    ListAppProvidersResponseDto:
-      type: object
-      properties:
-        providers:
-          description: Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
-          type: array
-          items:
-            $ref: '#/components/schemas/AppProviderSummaryDto'
-        total:
-          type: number
-          example: 3
-          description: Total number of providers in this response
-      required:
-      - providers
-      - total
-    WebhookConfigDto:
-      type: object
-      properties:
-        url:
-          type: string
-        enabled:
-          type: boolean
-          default: true
-        retryAttempts:
-          type: number
-          default: 3
-        timeoutSeconds:
-          type: number
-          default: 10
-        secret:
-          type: string
-          description: Redacted preview of the webhook signing secret in GET responses (e.g., whsec_****abc1). The full value is returned exactly once by POST /webhook-config/rotate-secret.
-        events:
-          default: []
-          type: array
-          items:
-            type: string
-      required:
-      - enabled
-      - retryAttempts
-      - timeoutSeconds
-      - events
-    UpdateRedirectUrisDto:
-      type: object
-      properties:
-        redirectUris:
-          type: array
-          items:
-            type: string
-      required:
-      - redirectUris
     RotateClientSecretResponseDto:
       type: object
       properties:
@@ -549,21 +445,48 @@ components:
           example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
       required:
       - clientSecret
-    WorkspaceBatchCreateAppsResponseDto:
+    WorkflowEntryDto:
       type: object
       properties:
-        results:
+        workflowId:
+          type: string
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
           type: array
           items:
-            type: object
-        successCount:
-          type: number
-        errorCount:
-          type: number
+            $ref: '#/components/schemas/FlowNodeDto'
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
       required:
-      - results
-      - successCount
-      - errorCount
+      - workflowId
+      - name
+      - entryNodeId
+      - nodes
+    UpdateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+          description: App-level brand logo (base64 data URL). Pass an empty string to remove the logo.
+        redirectUris:
+          type: array
+          items:
+            type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        defaultSuccessRedirectUri:
+          type: string
+        defaultFailureRedirectUri:
+          type: string
     BatchCreateAppsDto:
       type: object
       properties:
@@ -576,6 +499,33 @@ components:
           default: false
       required:
       - items
+    PaginatedAppsResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        total:
+          type: number
+        limit:
+          type: number
+        offset:
+          type: number
+      required:
+      - data
+      - total
+      - limit
+      - offset
+    UpdateRedirectUrisDto:
+      type: object
+      properties:
+        redirectUris:
+          type: array
+          items:
+            type: string
+      required:
+      - redirectUris
     WorkspaceAppDto:
       type: object
       properties:
@@ -636,31 +586,21 @@ components:
       - organizationId
       - createdAt
       - updatedAt
-    PaginatedAppsResponseDto:
+    WorkspaceBatchCreateAppsResponseDto:
       type: object
       properties:
-        data:
+        results:
           type: array
           items:
             type: object
-        total:
+        successCount:
           type: number
-        limit:
-          type: number
-        offset:
+        errorCount:
           type: number
       required:
-      - data
-      - total
-      - limit
-      - offset
-    CreateAppDto:
-      type: object
-      properties:
-        name:
-          type: string
-      required:
-      - name
+      - results
+      - successCount
+      - errorCount
     FlowNodeDto:
       type: object
       properties:
@@ -686,6 +626,66 @@ components:
       required:
       - id
       - type
+    ListAppProvidersResponseDto:
+      type: object
+      properties:
+        providers:
+          description: Activation state summaries for each provider that has been enabled on the app. Providers that have never been touched are not included. For detailed per-step info, call GET /apps/:id/providers/:providerId/activation/steps.
+          type: array
+          items:
+            $ref: '#/components/schemas/AppProviderSummaryDto'
+        total:
+          type: number
+          example: 3
+          description: Total number of providers in this response
+      required:
+      - providers
+      - total
+    CreateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    AppProviderSummaryDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+          example: mitid
+          description: Provider identifier
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the provider is enabled on this app
+        state:
+          type: string
+          enum:
+          - not_started
+          - in_progress
+          - completed
+          example: completed
+          description: Overall activation state derived from step completion
+        currentStep:
+          type: string
+          example: activated
+          description: The type key of the current activation step
+        currentStepIndex:
+          type: number
+          example: 3
+          description: Zero-based index of the current step in the step sequence
+        stepCount:
+          type: number
+          example: 4
+          description: Total number of steps in this provider's activation sequence
+      required:
+      - providerId
+      - enabled
+      - state
+      - currentStep
+      - currentStepIndex
+      - stepCount
   securitySchemes:
     basicAuth:
       type: http

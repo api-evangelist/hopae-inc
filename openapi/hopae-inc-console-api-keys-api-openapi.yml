@@ -113,14 +113,6 @@ paths:
       - JWT-auth: []
 components:
   schemas:
-    RevokeApiKeyResponseDto:
-      type: object
-      properties:
-        revoked:
-          type: boolean
-          example: true
-      required:
-      - revoked
     ApiKeyResponseDto:
       type: object
       properties:
@@ -151,6 +143,14 @@ components:
       - name
       - secret
       - created_at
+    RevokeApiKeyResponseDto:
+      type: object
+      properties:
+        revoked:
+          type: boolean
+          example: true
+      required:
+      - revoked
     CreateApiKeyDto:
       type: object
       properties:

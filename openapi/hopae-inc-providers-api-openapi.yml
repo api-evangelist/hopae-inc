@@ -95,52 +95,6 @@ paths:
       - basic-auth: []
 components:
   schemas:
-    UserDataOptionDto:
-      type: object
-      properties:
-        value:
-          type: string
-          description: Option value to be used in userData
-          example: ABNANL2A
-        label:
-          type: string
-          description: Human-readable label for the option
-          example: ABN AMRO
-      required:
-      - value
-      - label
-    ProviderConfigurationDto:
-      type: object
-      properties:
-        providerId:
-          type: string
-          description: Provider identifier
-          example: idin
-        requiredUserData:
-          description: Required userData fields for this provider
-          type: array
-          items:
-            $ref: '#/components/schemas/UserDataFieldDto'
-        optionalUserData:
-          description: Optional userData fields for this provider
-          type: array
-          items:
-            $ref: '#/components/schemas/UserDataFieldDto'
-        flowTypes:
-          description: Supported verification flow types
-          example:
-          - redirect
-          type: array
-          items:
-            type: string
-        lastUpdated:
-          type: string
-          description: ISO timestamp when configuration was last updated
-          example: '2024-01-15T10:30:00Z'
-      required:
-      - providerId
-      - requiredUserData
-      - flowTypes
     UserDataFieldDto:
       type: object
       properties:
@@ -180,6 +134,52 @@ components:
       - field
       - type
       - required
+      - label
+    ProviderConfigurationDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: Provider identifier
+          example: idin
+        requiredUserData:
+          description: Required userData fields for this provider
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataFieldDto'
+        optionalUserData:
+          description: Optional userData fields for this provider
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataFieldDto'
+        flowTypes:
+          description: Supported verification flow types
+          example:
+          - redirect
+          type: array
+          items:
+            type: string
+        lastUpdated:
+          type: string
+          description: ISO timestamp when configuration was last updated
+          example: '2024-01-15T10:30:00Z'
+      required:
+      - providerId
+      - requiredUserData
+      - flowTypes
+    UserDataOptionDto:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Option value to be used in userData
+          example: ABNANL2A
+        label:
+          type: string
+          description: Human-readable label for the option
+          example: ABN AMRO
+      required:
+      - value
       - label
   securitySchemes:
     basicAuth:

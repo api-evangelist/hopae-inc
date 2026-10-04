@@ -231,6 +231,17 @@ paths:
       - workspace-api-key: []
 components:
   schemas:
+    UpdateWorkflowDto:
+      type: object
+      properties:
+        name:
+          type: string
+        entryNodeId:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowNodeDto'
     CreateWorkflowDto:
       type: object
       properties:
@@ -248,9 +259,11 @@ components:
       - name
       - entryNodeId
       - nodes
-    UpdateWorkflowDto:
+    WorkflowResponseDto:
       type: object
       properties:
+        workflowId:
+          type: string
         name:
           type: string
         entryNodeId:
@@ -259,6 +272,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FlowNodeDto'
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+      - workflowId
+      - name
+      - entryNodeId
+      - nodes
     FlowNodeDto:
       type: object
       properties:
@@ -284,30 +308,6 @@ components:
       required:
       - id
       - type
-    WorkflowResponseDto:
-      type: object
-      properties:
-        workflowId:
-          type: string
-        name:
-          type: string
-        entryNodeId:
-          type: string
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlowNodeDto'
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
-      required:
-      - workflowId
-      - name
-      - entryNodeId
-      - nodes
   securitySchemes:
     basicAuth:
       type: http
