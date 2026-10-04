@@ -49,6 +49,10 @@ image: https://framerusercontent.com/assets/JDrpQK9QXlyYCuykjUrR228U2M.svg
 specificationVersion: '0.23'
 created: '2026-07-17'
 modified: '2026-07-19'
+x-docs-platform: mintlify
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-10-03
+x-docs-hosting: vercel
 tags:
 - Company
 - Identity
@@ -197,6 +201,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/hopae-inc-capability-edges.yml
+  name: Hopae Business Capability Map
 - type: Overlay
   url: overlays/hopae-inc-hconnect-overlay.yaml
 # --- security / governance (probed + derived) ---
