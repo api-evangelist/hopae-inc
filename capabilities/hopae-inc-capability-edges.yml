@@ -1,0 +1,48 @@
+slug: hopae-inc
+provider: Hopae
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: Workspace API - Apps
+  spec_file: hopae-inc-workspace-api-apps-api-openapi.yml
+  capability_id: BC-4270.40
+  capability_id_l1: BC-4270
+  capability_name: Developer Identity & Credential Management
+  confidence: 0.8
+  evidence: PUT /v1/apps/{id}/redirect-uris  Update redirect URIs; POST /v1/apps/{id}/webhook-config/rotate-secret  Rotate
+    webhook secret; schema RotateClientSecretResponseDto
+  reason: Operations create and manage OAuth/OIDC client applications with redirect URIs and rotating
+    client/webhook secrets — issuance and stewardship of developer credentials on the platform. Some overlap
+    with webhook subscription management, hence 0.8 rather than 0.95.
+- tag: Console - API Keys
+  spec_file: hopae-inc-console-api-keys-api-openapi.yml
+  capability_id: BC-4270.40
+  capability_id_l1: BC-4270
+  capability_name: Developer Identity & Credential Management
+  confidence: 0.75
+  evidence: '"Create workspace API key", "Revoke API key", schema CreateApiKeyDto'
+  reason: Issuance, listing, revocation and deletion of workspace API credentials used by developers to
+    consume the public hConnect API — developer credential stewardship. Some chance a reviewer would prefer
+    generic IAM.
+- tag: Verifications
+  spec_file: hopae-inc-verifications-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: '"Create Verification", "Get Verification Status", "Get evidence for a verification", "Create
+    DC request for Digital Credentials flow"'
+  reason: Orchestrates electronic identity verification of individuals against government-backed eIDs,
+    returning userinfo and evidence — identity verification/federation. Confidence capped because the
+    frame has no dedicated identity-verification capability and KYC-style customer identification is an
+    alternative reading.
