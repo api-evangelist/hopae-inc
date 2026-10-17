@@ -231,6 +231,31 @@ paths:
       - workspace-api-key: []
 components:
   schemas:
+    FlowNodeDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: nd_ab12cd34
+        type:
+          type: string
+          enum:
+          - request
+          - response
+          - verification
+          - check-min-loa
+          - check-claim
+          - evaluate
+          - if
+        next:
+          type: object
+          description: 'Next: string (single output) or NextRoute[] (IF branching)'
+        config:
+          type: object
+          description: Type-specific configuration (max depth 5, max 50 keys per level)
+      required:
+      - id
+      - type
     UpdateWorkflowDto:
       type: object
       properties:
@@ -283,31 +308,6 @@ components:
       - name
       - entryNodeId
       - nodes
-    FlowNodeDto:
-      type: object
-      properties:
-        id:
-          type: string
-          example: nd_ab12cd34
-        type:
-          type: string
-          enum:
-          - request
-          - response
-          - verification
-          - check-min-loa
-          - check-claim
-          - evaluate
-          - if
-        next:
-          type: object
-          description: 'Next: string (single output) or NextRoute[] (IF branching)'
-        config:
-          type: object
-          description: Type-specific configuration (max depth 5, max 50 keys per level)
-      required:
-      - id
-      - type
   securitySchemes:
     basicAuth:
       type: http

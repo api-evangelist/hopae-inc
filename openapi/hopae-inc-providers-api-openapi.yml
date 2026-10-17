@@ -95,6 +95,38 @@ paths:
       - basic-auth: []
 components:
   schemas:
+    ProviderConfigurationDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: Provider identifier
+          example: idin
+        requiredUserData:
+          description: Required userData fields for this provider
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataFieldDto'
+        optionalUserData:
+          description: Optional userData fields for this provider
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDataFieldDto'
+        flowTypes:
+          description: Supported verification flow types
+          example:
+          - redirect
+          type: array
+          items:
+            type: string
+        lastUpdated:
+          type: string
+          description: ISO timestamp when configuration was last updated
+          example: '2024-01-15T10:30:00Z'
+      required:
+      - providerId
+      - requiredUserData
+      - flowTypes
     UserDataFieldDto:
       type: object
       properties:
@@ -135,38 +167,6 @@ components:
       - type
       - required
       - label
-    ProviderConfigurationDto:
-      type: object
-      properties:
-        providerId:
-          type: string
-          description: Provider identifier
-          example: idin
-        requiredUserData:
-          description: Required userData fields for this provider
-          type: array
-          items:
-            $ref: '#/components/schemas/UserDataFieldDto'
-        optionalUserData:
-          description: Optional userData fields for this provider
-          type: array
-          items:
-            $ref: '#/components/schemas/UserDataFieldDto'
-        flowTypes:
-          description: Supported verification flow types
-          example:
-          - redirect
-          type: array
-          items:
-            type: string
-        lastUpdated:
-          type: string
-          description: ISO timestamp when configuration was last updated
-          example: '2024-01-15T10:30:00Z'
-      required:
-      - providerId
-      - requiredUserData
-      - flowTypes
     UserDataOptionDto:
       type: object
       properties:

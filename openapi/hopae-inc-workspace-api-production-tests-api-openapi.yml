@@ -118,16 +118,21 @@ paths:
       - workspace-api-key: []
 components:
   schemas:
-    ChallengeReportResponseDto:
+    ChallengeReportStatsDto:
       type: object
       properties:
-        challenge:
-          $ref: '#/components/schemas/ChallengeV2ResponseDto'
-        stats:
-          $ref: '#/components/schemas/ChallengeReportStatsDto'
+        totalParticipations:
+          type: number
+        totalClaims:
+          type: number
+        providerBreakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProviderBreakdownDto'
       required:
-      - challenge
-      - stats
+      - totalParticipations
+      - totalClaims
+      - providerBreakdown
     ProviderBreakdownDto:
       type: object
       properties:
@@ -141,6 +146,40 @@ components:
       - providerId
       - providerName
       - claimCount
+    CreateProductionTestDto:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Challenge title
+          example: BankID SE Production Test
+        description:
+          type: string
+          description: Challenge description
+        providerIds:
+          description: Provider IDs to test
+          example:
+          - bankidse
+          - smartid
+          type: array
+          items:
+            type: string
+        targetPlatform:
+          type: string
+          description: Target platform filter
+          enum:
+          - ios
+          - android
+        maxStamps:
+          type: number
+          description: Maximum number of stamps (first-come limit)
+          example: 3
+          minimum: 1
+        allowDuplicateParticipation:
+          type: boolean
+          description: Whether to allow duplicate participation (same user + same provider)
+      required:
+      - title
     ChallengeRequestResponseDto:
       type: object
       properties:
@@ -176,55 +215,16 @@ components:
           $ref: '#/components/schemas/ChallengeRequestResponseDto'
       required:
       - type
-    ChallengeReportStatsDto:
+    ChallengeReportResponseDto:
       type: object
       properties:
-        totalParticipations:
-          type: number
-        totalClaims:
-          type: number
-        providerBreakdown:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProviderBreakdownDto'
+        challenge:
+          $ref: '#/components/schemas/ChallengeV2ResponseDto'
+        stats:
+          $ref: '#/components/schemas/ChallengeReportStatsDto'
       required:
-      - totalParticipations
-      - totalClaims
-      - providerBreakdown
-    CreateProductionTestDto:
-      type: object
-      properties:
-        title:
-          type: string
-          description: Challenge title
-          example: BankID SE Production Test
-        description:
-          type: string
-          description: Challenge description
-        providerIds:
-          description: Provider IDs to test
-          example:
-          - bankidse
-          - smartid
-          type: array
-          items:
-            type: string
-        targetPlatform:
-          type: string
-          description: Target platform filter
-          enum:
-          - ios
-          - android
-        maxStamps:
-          type: number
-          description: Maximum number of stamps (first-come limit)
-          example: 3
-          minimum: 1
-        allowDuplicateParticipation:
-          type: boolean
-          description: Whether to allow duplicate participation (same user + same provider)
-      required:
-      - title
+      - challenge
+      - stats
     ChallengeV2ResponseDto:
       type: object
       properties:

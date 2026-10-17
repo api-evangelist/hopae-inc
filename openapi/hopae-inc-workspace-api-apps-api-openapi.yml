@@ -379,6 +379,44 @@ paths:
       - Workspace API - Apps
 components:
   schemas:
+    AppProviderSummaryDto:
+      type: object
+      properties:
+        providerId:
+          type: string
+          example: mitid
+          description: Provider identifier
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the provider is enabled on this app
+        state:
+          type: string
+          enum:
+          - not_started
+          - in_progress
+          - completed
+          example: completed
+          description: Overall activation state derived from step completion
+        currentStep:
+          type: string
+          example: activated
+          description: The type key of the current activation step
+        currentStepIndex:
+          type: number
+          example: 3
+          description: Zero-based index of the current step in the step sequence
+        stepCount:
+          type: number
+          example: 4
+          description: Total number of steps in this provider's activation sequence
+      required:
+      - providerId
+      - enabled
+      - state
+      - currentStep
+      - currentStepIndex
+      - stepCount
     WebhookConfigDto:
       type: object
       properties:
@@ -406,45 +444,6 @@ components:
       - retryAttempts
       - timeoutSeconds
       - events
-    UpdateWebhookConfigDto:
-      type: object
-      properties:
-        url:
-          type: string
-        enabled:
-          type: boolean
-        retryAttempts:
-          type: number
-        timeoutSeconds:
-          type: number
-        events:
-          type: array
-          items:
-            type: string
-    BatchCreateAppItemDto:
-      type: object
-      properties:
-        name:
-          type: string
-        redirectUris:
-          type: array
-          items:
-            type: string
-        webhookConfig:
-          $ref: '#/components/schemas/WebhookConfigDto'
-        idempotencyKey:
-          type: string
-      required:
-      - name
-    RotateClientSecretResponseDto:
-      type: object
-      properties:
-        clientSecret:
-          type: string
-          description: The newly generated clientSecret. Persist immediately; cannot be retrieved later.
-          example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
-      required:
-      - clientSecret
     WorkflowEntryDto:
       type: object
       properties:
@@ -487,45 +486,21 @@ components:
           type: string
         defaultFailureRedirectUri:
           type: string
-    BatchCreateAppsDto:
+    BatchCreateAppItemDto:
       type: object
       properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/BatchCreateAppItemDto'
-        continueOnError:
-          type: boolean
-          default: false
-      required:
-      - items
-    PaginatedAppsResponseDto:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: object
-        total:
-          type: number
-        limit:
-          type: number
-        offset:
-          type: number
-      required:
-      - data
-      - total
-      - limit
-      - offset
-    UpdateRedirectUrisDto:
-      type: object
-      properties:
+        name:
+          type: string
         redirectUris:
           type: array
           items:
             type: string
+        webhookConfig:
+          $ref: '#/components/schemas/WebhookConfigDto'
+        idempotencyKey:
+          type: string
       required:
-      - redirectUris
+      - name
     WorkspaceAppDto:
       type: object
       properties:
@@ -586,6 +561,22 @@ components:
       - organizationId
       - createdAt
       - updatedAt
+    RotateClientSecretResponseDto:
+      type: object
+      properties:
+        clientSecret:
+          type: string
+          description: The newly generated clientSecret. Persist immediately; cannot be retrieved later.
+          example: a3f2c1e4b8d7f6a9c2e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0f3a6c9e2b5d8f1a4
+      required:
+      - clientSecret
+    CreateAppDto:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
     WorkspaceBatchCreateAppsResponseDto:
       type: object
       properties:
@@ -626,6 +617,60 @@ components:
       required:
       - id
       - type
+    BatchCreateAppsDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchCreateAppItemDto'
+        continueOnError:
+          type: boolean
+          default: false
+      required:
+      - items
+    PaginatedAppsResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        total:
+          type: number
+        limit:
+          type: number
+        offset:
+          type: number
+      required:
+      - data
+      - total
+      - limit
+      - offset
+    UpdateWebhookConfigDto:
+      type: object
+      properties:
+        url:
+          type: string
+        enabled:
+          type: boolean
+        retryAttempts:
+          type: number
+        timeoutSeconds:
+          type: number
+        events:
+          type: array
+          items:
+            type: string
+    UpdateRedirectUrisDto:
+      type: object
+      properties:
+        redirectUris:
+          type: array
+          items:
+            type: string
+      required:
+      - redirectUris
     ListAppProvidersResponseDto:
       type: object
       properties:
@@ -641,51 +686,6 @@ components:
       required:
       - providers
       - total
-    CreateAppDto:
-      type: object
-      properties:
-        name:
-          type: string
-      required:
-      - name
-    AppProviderSummaryDto:
-      type: object
-      properties:
-        providerId:
-          type: string
-          example: mitid
-          description: Provider identifier
-        enabled:
-          type: boolean
-          example: true
-          description: Whether the provider is enabled on this app
-        state:
-          type: string
-          enum:
-          - not_started
-          - in_progress
-          - completed
-          example: completed
-          description: Overall activation state derived from step completion
-        currentStep:
-          type: string
-          example: activated
-          description: The type key of the current activation step
-        currentStepIndex:
-          type: number
-          example: 3
-          description: Zero-based index of the current step in the step sequence
-        stepCount:
-          type: number
-          example: 4
-          description: Total number of steps in this provider's activation sequence
-      required:
-      - providerId
-      - enabled
-      - state
-      - currentStep
-      - currentStepIndex
-      - stepCount
   securitySchemes:
     basicAuth:
       type: http
